@@ -2,14 +2,14 @@
 
 AABB::AABB(const AABB& aabb)
 {
-	this->min = aabb.min;
-	this->max = aabb.max;
+	min = aabb.min;
+	max = aabb.max;
 }
 
-AABB& AABB::operator=(const AABB aabb)
+AABB& AABB::operator=(const AABB other)
 {
-	this->min = aabb.min;
-	this->max = aabb.max;
+	min = other.min;
+	max = other.max;
 	return *this;
 }
 

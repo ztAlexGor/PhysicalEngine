@@ -2,7 +2,7 @@
 
 Circle::Circle(Circle& other): Shape(EType::circle)
 {
-	this->radius = other.radius;
+	radius = other.radius;
 }
 
 float Circle::GetRadius() const

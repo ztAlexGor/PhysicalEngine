@@ -22,6 +22,8 @@ public:
 
 	float SqLength() const;
 
+	Vector& Normalize();
+
 	Vector& operator=(Vector other);
 
 	bool operator==(const Vector& other);

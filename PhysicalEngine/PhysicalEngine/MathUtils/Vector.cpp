@@ -28,16 +28,24 @@ float Vector::SqLength() const
 	return x * x + y * y;
 }
 
+Vector& Vector::Normalize()
+{
+	float length = Length();
+	x /= length;
+	y /= length;
+	return *this;
+}
+
 Vector& Vector::operator=(Vector other)
 {
-	this->x = other.x;
-	this->y = other.y;
+	x = other.x;
+	y = other.y;
 	return *this;
 }
 
 bool Vector::operator==(const Vector& other)
 {
-	return this->x == other.x && this->y == other.y;
+	return x == other.x && y == other.y;
 }
 
 bool Vector::operator!=(const Vector& other)
@@ -47,29 +55,29 @@ bool Vector::operator!=(const Vector& other)
 
 Vector& Vector::operator-=(const Vector& other)
 {
-	this->x -= other.x;
-	this->y -= other.y;
+	x -= other.x;
+	y -= other.y;
 	return *this;
 }
 
 Vector& Vector::operator+=(const Vector& other)
 {
-	this->x += other.x;
-	this->y += other.y;
+	x += other.x;
+	y += other.y;
 	return *this;
 }
 
 Vector& Vector::operator*=(const float val)
 {
-	this->x *= val;
-	this->y *= val;
+	x *= val;
+	y *= val;
 	return *this;
 }
 
 Vector& Vector::operator/=(const float val)
 {
-	this->x /= val;
-	this->y /= val;
+	x /= val;
+	y /= val;
 	return *this;
 }
 
