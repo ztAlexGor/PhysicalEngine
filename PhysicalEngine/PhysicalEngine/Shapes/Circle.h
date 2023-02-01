@@ -12,7 +12,7 @@ class Circle : public Shape
 public:
 	Circle(float radius) : Shape(EType::circle), radius(radius) {};
 
-	Circle(Circle& other);
+	Circle(const Circle& other);
 
 	float GetRadius() const;
 
@@ -20,6 +20,8 @@ public:
 
 	virtual AABB ComputeAABB() const override;
 
-	virtual float ComputeMass() const override;
+	virtual MassInfo ComputeMass(float density) const override;
+
+	virtual Shape* Clone() const override;
 };
 

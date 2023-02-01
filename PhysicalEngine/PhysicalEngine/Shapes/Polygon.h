@@ -7,7 +7,7 @@ class Polygon : public Shape
 	std::vector<Vector> vertices;
 	std::vector<Vector> edges;
 	std::vector<Vector> normals;
-	Vector centroid;
+	// Vector centroid;
 	float area;
 
 public:
@@ -23,11 +23,15 @@ public:
 
 	virtual AABB ComputeAABB() const override;
 
-	virtual float ComputeMass() const override;
+	virtual MassInfo ComputeMass(float density) const override;
+
+	virtual Shape* Clone() const override;
 
 private:
+	Vector GetCentroid();
+
 	void InitializeArea();
 
-	void InitializeCentroid();
+	// void InitializeCentroid();
 };
 

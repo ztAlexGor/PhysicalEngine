@@ -38,16 +38,16 @@ public:
 
 	Vector& operator/=(const float val);
 
-	//Vector operator-(const Vector& other) const;
+	Vector operator-(const Vector& other) const;
 
-	//Vector operator+(const Vector& other) const;
+	Vector operator+(const Vector& other) const;
 
 	Vector operator*(const float val) const;
 
 	Vector operator/(const float val) const;
 
-	friend Vector operator+(const Vector a, const Vector b);
+	static float DotProduct(const Vector& a, const Vector& b);
 
-	friend Vector operator-(const Vector a, const Vector b);
+	static float CrossProduct(const Vector& a, const Vector& b);
 };
 

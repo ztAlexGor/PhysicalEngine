@@ -81,17 +81,17 @@ Vector& Vector::operator/=(const float val)
 	return *this;
 }
 
-//Vector Vector::operator-(const Vector& other) const
-//{
-//	Vector copy = *this;
-//	return copy -= other;
-//}
-//
-//Vector Vector::operator+(const Vector& other) const
-//{
-//	Vector copy = *this;
-//	return copy += other;
-//}
+Vector Vector::operator-(const Vector& other) const
+{
+	Vector copy = *this;
+	return copy -= other;
+}
+
+Vector Vector::operator+(const Vector& other) const
+{
+	Vector copy = *this;
+	return copy += other;
+}
 
 Vector Vector::operator*(const float val) const
 {
@@ -105,14 +105,13 @@ Vector Vector::operator/(const float val) const
 	return copy /= val;
 }
 
-Vector operator+(const Vector a, const Vector b)
+float Vector::DotProduct(const Vector& a, const Vector& b)
 {
-	Vector copy = a;
-	return copy += b;
+	return a.x * b.x + a.y * b.y;
 }
 
-Vector operator-(const Vector a, const Vector b)
+float Vector::CrossProduct(const Vector& a, const Vector& b)
 {
-	Vector copy = a;
-	return copy += b;
+	return a.x * b.y - a.y * b.x;
 }
+

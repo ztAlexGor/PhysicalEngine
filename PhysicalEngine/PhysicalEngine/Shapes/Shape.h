@@ -1,6 +1,16 @@
 #pragma once
 #include "..\Optimisation\AABB.h"
 
+
+struct MassInfo
+{
+	float mass;
+	float invMass;
+	float inertia;
+	float invInertia;
+};
+
+
 class Shape
 {
 public:
@@ -24,7 +34,9 @@ public:
 
 	virtual AABB ComputeAABB() const = 0;
 	
-	virtual float ComputeMass() const = 0;
+	virtual MassInfo ComputeMass(float density) const = 0;
+
+	virtual Shape* Clone() const = 0;
 
 	virtual ~Shape() = 0;
 };
