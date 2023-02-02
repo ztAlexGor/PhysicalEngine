@@ -21,14 +21,14 @@ public:
 
 	std::vector<Vector>& GetNormals();
 
-	virtual AABB ComputeAABB() const override;
+	virtual void InitAABB() override;
 
 	virtual MassInfo ComputeMass(float density) const override;
 
 	virtual Shape* Clone() const override;
-
-private:
 	Vector GetCentroid();
+private:
+	
 
 	void InitializeArea();
 

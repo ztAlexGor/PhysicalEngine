@@ -26,18 +26,19 @@ protected:
 	EType type;
 
 public:
-	Shape(EType type) : type(type), aabb(ComputeAABB()) {};
+	Shape(EType type) : type(type) {};
 
 	AABB GetAABB() const;
 
 	EType GetType() const;
-
-	virtual AABB ComputeAABB() const = 0;
-	
+		
 	virtual MassInfo ComputeMass(float density) const = 0;
 
 	virtual Shape* Clone() const = 0;
 
-	virtual ~Shape() = 0;
+	//virtual ~Shape() = 0;
+
+protected:
+	virtual void InitAABB() = 0;
 };
 

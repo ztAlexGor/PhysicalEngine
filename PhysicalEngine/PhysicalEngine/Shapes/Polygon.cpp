@@ -30,6 +30,8 @@ Polygon::Polygon(std::vector<Vector> listOfVertices) : Shape(EType::polygon), ve
     for (Vector& vertex : vertices) {
         vertex -= centroid;
     }
+
+    InitAABB();
 }
 
 
@@ -54,7 +56,7 @@ std::vector<Vector>& Polygon::GetNormals()
 }
 
 
-AABB Polygon::ComputeAABB() const
+void Polygon::InitAABB()
 {
     Vector min(INFINITY, INFINITY);
     Vector max(-INFINITY, -INFINITY);
@@ -65,7 +67,7 @@ AABB Polygon::ComputeAABB() const
         if (max.x < dot.x)max.x = dot.x;
         if (max.y < dot.y)max.y = dot.y;
     }
-    return AABB(min, max);
+    aabb = AABB(min, max);
 }
 
 MassInfo Polygon::ComputeMass(float density) const
@@ -108,17 +110,20 @@ void Polygon::InitializeArea()
 
         j = i;
     }
+    area /= -2;
 }
 
 
 Vector Polygon::GetCentroid()
 {
     Vector centroid(0.f, 0.f);
-    for (int i = 0; i < vertices.size() - 1; ++i)
+    for (int i = 0; i < vertices.size(); ++i)
     {
-        centroid.x += (vertices[i].x + vertices[i + 1].x) * (vertices[i].x * vertices[i + 1].y - vertices[i - 1].x * vertices[i].y);
-        centroid.y += (vertices[i].y + vertices[i + 1].y) * (vertices[i].x * vertices[i + 1].y - vertices[i - 1].x * vertices[i].y);
-    }
+        int v1 = i;
+        int v2 = i + 1 < vertices.size() ? i + 1 : 0;
+
+        centroid += (vertices[v1] + vertices[v2]) * Vector::CrossProduct(vertices[v1], vertices[v2]);
+    }                                                                                                      
 
     return centroid /= 6 * area;
 }

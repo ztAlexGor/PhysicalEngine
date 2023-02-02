@@ -10,15 +10,15 @@ class Circle : public Shape
 	float radius;
 
 public:
-	Circle(float radius) : Shape(EType::circle), radius(radius) {};
+	Circle(float radius);
 
-	Circle(const Circle& other);
+	Circle(const Circle& other) : Circle(other.radius) {};
 
 	float GetRadius() const;
 
 	void SetRadius(float radius);
 
-	virtual AABB ComputeAABB() const override;
+	virtual void InitAABB() override;
 
 	virtual MassInfo ComputeMass(float density) const override;
 
