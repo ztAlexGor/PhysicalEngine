@@ -1,5 +1,6 @@
 #include "Polygon.h"
 #include <stdexcept>
+#include <numbers>
 
 
 Polygon::Polygon(std::vector<Vector> listOfVertices) : Shape(EType::polygon), vertices(std::move(listOfVertices))/*, centroid(Vector(0.f, 0.f))*/
@@ -38,19 +39,19 @@ Polygon::Polygon(std::vector<Vector> listOfVertices) : Shape(EType::polygon), ve
 Polygon::Polygon(Polygon& other): Polygon(other.vertices) {}
 
 
-std::vector<Vector>& Polygon::GetVertices()
+const std::vector<Vector>& Polygon::GetVertices() const
 {
     return vertices;
 }
 
 
-std::vector<Vector>& Polygon::GetEdges()
+const std::vector<Vector>& Polygon::GetEdges() const
 {
     return edges;
 }
 
 
-std::vector<Vector>& Polygon::GetNormals()
+const std::vector<Vector>& Polygon::GetNormals() const
 {
     return normals;
 }
@@ -97,6 +98,11 @@ Shape* Polygon::Clone() const
     return new Polygon(std::vector<Vector>(vertices));
 }
 
+void Polygon::Rotate(float angle)
+{
+    matrix.Set(angle / 180.f * std::numbers::pi);
+}
+
 
 void Polygon::InitializeArea()
 {
@@ -114,7 +120,7 @@ void Polygon::InitializeArea()
 }
 
 
-Vector Polygon::GetCentroid()
+Vector Polygon::GetCentroid() const
 {
     Vector centroid(0.f, 0.f);
     for (int i = 0; i < vertices.size(); ++i)

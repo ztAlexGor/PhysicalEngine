@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cmath>
-
 struct Vector
 {
 	float x;
@@ -13,6 +11,10 @@ public:
 	Vector() : Vector(0.0, 0.0) {};
 
 	Vector(const Vector& v);
+
+	float X() const;
+
+	float Y() const;
 
 	void Set(float x, float y);
 

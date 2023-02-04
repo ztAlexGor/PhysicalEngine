@@ -66,6 +66,8 @@ public:
 
 	std::string GetAdittionalData() const;
 
+	Shape::EType GetShapeType() const;
+
 	// setters
 	void SetShape(Shape* newShape, MaterialInfo material, float density);
 

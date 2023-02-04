@@ -15,21 +15,23 @@ public:
 
 	Polygon(Polygon& other);
 
-	std::vector<Vector>& GetVertices();
+	const std::vector<Vector>& GetVertices() const;
 
-	std::vector<Vector>& GetEdges();
+	const std::vector<Vector>& GetEdges() const;
 
-	std::vector<Vector>& GetNormals();
+	const std::vector<Vector>& GetNormals() const;
 
 	virtual void InitAABB() override;
 
 	virtual MassInfo ComputeMass(float density) const override;
 
 	virtual Shape* Clone() const override;
-	Vector GetCentroid();
-private:
-	
 
+	void Rotate(float angle) override;
+	
+	Vector GetCentroid() const;
+
+private:
 	void InitializeArea();
 
 	// void InitializeCentroid();

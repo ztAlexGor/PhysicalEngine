@@ -1,9 +1,20 @@
 #include "Vector.h"
+#include <cmath>
 
 Vector::Vector(const Vector& v)
 {
 	this->x = v.x;
 	this->y = v.y;
+}
+
+float Vector::X() const
+{
+	return x;
+}
+
+float Vector::Y() const
+{
+	return y;
 }
 
 void Vector::Set(float x, float y)

@@ -18,10 +18,13 @@ public:
 
 	void SetRadius(float radius);
 
-	virtual void InitAABB() override;
-
 	virtual MassInfo ComputeMass(float density) const override;
 
 	virtual Shape* Clone() const override;
+
+	void Rotate(float angle) override {};
+
+protected:
+	virtual void InitAABB() override;
 };
 

@@ -78,6 +78,11 @@ std::string Body::GetAdittionalData() const
 	return adittionalData;
 }
 
+Shape::EType Body::GetShapeType() const
+{
+	return shape->GetType();
+}
+
 void Body::SetMaterial(MaterialInfo material)
 {
 	this->material = material;
@@ -96,6 +101,7 @@ void Body::SetVelocity(Vector vel)
 void Body::SetAngle(float newAngle)
 {
 	angle = newAngle;
+	shape->Rotate(angle);
 }
 
 void Body::SetAngularVelocity(float newAngularVelocity)

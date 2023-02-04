@@ -1,5 +1,6 @@
 #pragma once
-#include "..\Optimisation\AABB.h"
+#include "../Optimisation/AABB.h"
+#include "../MathUtils/Matrix.h"
 
 
 struct MassInfo
@@ -24,17 +25,22 @@ public:
 protected:
 	AABB aabb;
 	EType type;
+	Matrix matrix;
 
 public:
-	Shape(EType type) : type(type) {};
+	Shape(EType type);
 
 	AABB GetAABB() const;
 
 	EType GetType() const;
+
+	Matrix GetMatrix() const;
 		
 	virtual MassInfo ComputeMass(float density) const = 0;
 
 	virtual Shape* Clone() const = 0;
+
+	virtual void Rotate(float angle) = 0;
 
 	//virtual ~Shape() = 0;
 
