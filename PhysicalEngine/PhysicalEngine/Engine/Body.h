@@ -1,5 +1,5 @@
 #pragma once
-#include "Shapes/Shape.h"
+#include "../Shapes/Shape.h"
 #include <vector>
 #include <string>
 
@@ -17,28 +17,43 @@ struct BodyInit
 	Vector position;
 	Vector velocity;
 	float angle;
+	float torque;
 	float angularVelocity;
-	bool bIsStatic;
-	float gravityScale;
+	bool bIsStatic = false;
+	float gravityScale = 1;
 	std::vector<Vector> forces;
 	std::string adittionalData;
+
+	//BodyInit()
+	//{
+	//	position = Vector(0.f, 0.f);
+	//	velocity = Vector(0.f, 0.f);
+	//	angle = 0;
+	//	torque = 0;
+	//	angularVelocity = 0;
+	//	bIsStatic = false;
+	//	float gravityScale = 1.f;
+	//}
 };
 
 
 class Body
 {
-	Shape* shape;
-	MassInfo massInfo;
-	MaterialInfo material;
+	Shape* m_shape;
+	MassInfo m_massInfo;
+	MaterialInfo m_material;
 	
-	Vector position;
-	Vector velocity;
-	float angle;
-	float angularVelocity;
+	Vector m_position;
+	Vector m_velocity;
+	float m_angle;
+	float m_torque;
+	float m_angularVelocity;
 	bool bIsStatic;
-	float gravityScale;
-	std::vector<Vector> forces;
-	std::string adittionalData;
+	float m_gravityScale;
+	std::vector<Vector> m_forces;
+	std::string m_adittionalData;
+
+	Vector m_resultForce;
 
 public:
 	Body(const BodyInit& init);
@@ -69,24 +84,31 @@ public:
 	Shape::EType GetShapeType() const;
 
 	// setters
-	void SetShape(Shape* newShape, MaterialInfo material, float density);
+	void SetShape(Shape* shape, MaterialInfo material, float density);
 
 	void SetMaterial(MaterialInfo material);
 
-	void SetPosition(Vector pos);
+	void SetPosition(Vector position);
 
-	void SetVelocity(Vector vel);
+	void SetVelocity(Vector velocity);
 
-	void SetAngle(float newAngle);
+	void SetAngle(float angle);
 
-	void SetAngularVelocity(float newAngularVelocity);
+	void SetAngularVelocity(float angularVelocity);
 
 	void SetStatic(bool arg);
 
-	void SetGravityScale(float newGravityScale);
+	void SetGravityScale(float gravityScale);
 
 	void SetForces(std::vector<Vector>& forces);
 
 	void SetAdittionalData(std::string data);
+
+	// main function
+	void ClearForces();
+
+	void AddForce(Vector force);
+
+	void ApplyForces(float time, const Vector& gravity);
 };
 

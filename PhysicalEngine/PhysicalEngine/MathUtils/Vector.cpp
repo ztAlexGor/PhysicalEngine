@@ -126,3 +126,8 @@ float Vector::CrossProduct(const Vector& a, const Vector& b)
 	return a.x * b.y - a.y * b.x;
 }
 
+Vector Vector::CrossProduct(float a, const Vector& b)
+{
+	return Vector(-a * b.y, a * b.x);
+}
+

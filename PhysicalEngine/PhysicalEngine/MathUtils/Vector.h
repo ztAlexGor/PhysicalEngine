@@ -8,7 +8,7 @@ struct Vector
 public:
 	Vector(const float x, const float y) : x(x), y(y) {};
 
-	Vector() : Vector(0.0, 0.0) {};
+	Vector() : Vector(0.f, 0.f) {};
 
 	Vector(const Vector& v);
 
@@ -51,5 +51,7 @@ public:
 	static float DotProduct(const Vector& a, const Vector& b);
 
 	static float CrossProduct(const Vector& a, const Vector& b);
+
+	static Vector CrossProduct(float a, const Vector& b);
 };
 
