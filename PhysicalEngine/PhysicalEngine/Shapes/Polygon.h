@@ -13,6 +13,8 @@ class Polygon : public Shape
 public:
 	Polygon(std::vector<Vector> vertices);
 
+	Polygon(float width, float height, float angle);
+
 	Polygon(Polygon& other);
 
 	const std::vector<Vector>& GetVertices() const;
@@ -30,7 +32,6 @@ public:
 	void Rotate(float angle) override;
 	
 	Vector GetCentroid() const;
-
 private:
 	void InitializeArea();
 

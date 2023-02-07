@@ -15,11 +15,11 @@ struct MassInfo
 class Shape
 {
 public:
-	enum EType
+	enum class EType
 	{
-		circle = 0,
-		polygon = 1,
-		size = 2
+		circle,
+		polygon,
+		size
 	};
 
 protected:

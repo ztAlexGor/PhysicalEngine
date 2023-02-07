@@ -36,6 +36,40 @@ Polygon::Polygon(std::vector<Vector> listOfVertices) : Shape(EType::polygon), ve
 }
 
 
+Polygon::Polygon(float width, float height, float angle) : Shape(EType::polygon)
+{
+    if (width <= 0 || height <= 0)throw std::logic_error("Incorrect rectangle size");
+
+    float halfW = width / 2.f;
+    float halfH = height / 2.f;
+
+
+    // calculate vertices
+    vertices.push_back(Vector(-halfW, -halfH));
+    vertices.push_back(Vector( halfW, -halfH));
+    vertices.push_back(Vector( halfW,  halfH));
+    vertices.push_back(Vector(-halfW,  halfH));
+
+    // calculate edges
+    for (int i = 0; i < vertices.size() - 1; ++i)
+    {
+        edges.emplace_back(vertices[i + 1] - vertices[i]);
+    }
+    edges.emplace_back(vertices[0] - vertices[vertices.size() - 1]);
+
+    // calculate normals
+    for (const Vector& edge : edges)
+    {
+        normals.emplace_back(Vector(edge.y, -edge.x).Normalize());
+    }
+
+    // calculate area and AABB
+    area = width * height;
+
+    aabb = AABB(Vector(-halfW, -halfH), Vector(halfW, halfH));
+}
+
+
 Polygon::Polygon(Polygon& other): Polygon(other.vertices) {}
 
 
@@ -71,6 +105,7 @@ void Polygon::InitAABB()
     aabb = AABB(min, max);
 }
 
+
 MassInfo Polygon::ComputeMass(float density) const
 {
     float inertiaCoef = 0.0f;
@@ -97,6 +132,7 @@ Shape* Polygon::Clone() const
 {
     return new Polygon(std::vector<Vector>(vertices));
 }
+
 
 void Polygon::Rotate(float angle)
 {
@@ -133,6 +169,7 @@ Vector Polygon::GetCentroid() const
 
     return centroid /= 6 * area;
 }
+
 
 //void Polygon::InitializeCentroid()
 //{
