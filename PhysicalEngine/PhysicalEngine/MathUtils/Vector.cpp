@@ -116,6 +116,11 @@ Vector Vector::operator/(const float val) const
 	return copy /= val;
 }
 
+Vector Vector::operator-() const
+{
+	return Vector(-x, -y);
+}
+
 float Vector::DotProduct(const Vector& a, const Vector& b)
 {
 	return a.x * b.x + a.y * b.y;
@@ -131,3 +136,7 @@ Vector Vector::CrossProduct(float a, const Vector& b)
 	return Vector(-a * b.y, a * b.x);
 }
 
+Vector operator*(const float a, const Vector& v)
+{
+	return Vector(v.x * a, v.y * a);
+}

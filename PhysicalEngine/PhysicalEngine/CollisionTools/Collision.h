@@ -1,5 +1,21 @@
 #pragma once
-#include "CollisionStructs.h"
+#include <memory>
+
+#include "../Shapes/Circle.h"
+#include "../Shapes/Polygon.h"
+#include "../Engine/Body.h"
+
+
+struct CollisionManifold
+{
+	static constexpr size_t MAX_SIZE = 2;
+
+	float depth;
+	Vector normal;
+	Vector crossPoint[MAX_SIZE];
+	int crossPointsNumber;
+};
+
 
 
 class Collision
@@ -16,7 +32,5 @@ public:
 	static CollisionManifold PolygonWithCircle(const Body& bodyA, const Body& bodyB);
 
 	static CollisionManifold PolygonWithPolygon(const Body& bodyA, const Body& bodyB);
-
-
 };
 

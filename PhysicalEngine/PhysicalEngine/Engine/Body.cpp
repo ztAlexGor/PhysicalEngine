@@ -56,6 +56,11 @@ float Body::GetAngle() const
 	return m_angle;
 }
 
+float Body::GetTorque() const
+{
+	return m_torque;
+}
+
 float Body::GetAngularVelocity() const
 {
 	return m_angularVelocity;
@@ -107,6 +112,11 @@ void Body::SetAngle(float angle)
 	m_shape->Rotate(m_angle);
 }
 
+void Body::SetTorque(float torque)
+{
+	m_torque = torque;
+}
+
 void Body::SetAngularVelocity(float angularVelocity)
 {
 	m_angularVelocity = angularVelocity;
@@ -156,6 +166,27 @@ void Body::ApplyForces(float time, const Vector& gravity)
 
 	m_velocity += (m_resultForce * m_massInfo.invMass + gravity * m_gravityScale) * time;
 	m_angularVelocity += m_torque * m_massInfo.invInertia * time;
+
+	if (m_torque != 0)throw 1;
 }
 
+void Body::CalculatePosition(float time)
+{
+	if (bIsStatic)return;
+
+	m_position += m_velocity * time;
+	SetAngle(m_angle + m_angularVelocity * time);
+}
+
+void Body::ApplyImpulse(Vector impulse, Vector contactVector)
+{
+	m_velocity += impulse * m_massInfo.invMass;
+	m_angularVelocity += m_massInfo.invInertia * Vector::CrossProduct(contactVector, impulse);
+}
+
+void Body::ApplyImpulse(Vector impulse, float time)
+{
+	m_velocity += impulse * m_massInfo.invMass;
+	m_position += m_velocity * time;
+}
 

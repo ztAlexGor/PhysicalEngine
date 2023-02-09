@@ -40,12 +40,18 @@ void World::Step(float time, int iterNum)
 {
     for (Body& body : m_bodies)
     {
-        if (body.GetAdittionalData() != "key")
+        if (body.GetAdittionalData() == "key" || body.GetAdittionalData() == "keyCollision")
+            body.SetAdittionalData("key");
+        else if (body.GetAdittionalData() == "" || body.GetAdittionalData() == "Collision") {
             body.SetAdittionalData("");
+        }
+        else {
+            int r = 0;
+        }
     }
-
-
-    //застосовуємо усі додаткові сили (наприклад, силу тяжіння)
+    /////////////////////////////////////////////step///////////////////////////////////////////////////////////
+    
+    //застосовуємо усі додаткові сили (наприклад, силу тяжіння) за час = time / 2.f
     for (Body& body : m_bodies)
     {
         body.ApplyForces(time / 2.f, m_gravity);
@@ -54,34 +60,47 @@ void World::Step(float time, int iterNum)
     // find all collision pairs
     FindCollisions();
 
-    // обраховуємо коєфіцієнти тертя та відновлення
-    for (std::shared_ptr<CollisionPair>& collision : collisions) 
+    // fix collisions
+    FixCollision(time, iterNum);
+
+    //оновлюємо позицію тіла за певний проміжок часу
+    for (Body& body : m_bodies)
     {
-        collision->InitProperties(time, m_gravity);
+        body.CalculatePosition(time);
     }
 
+    // вдруге застосовуємо усі сили за час = time / 2.f
+    for (Body& body : m_bodies)
+    {
+        body.ApplyForces(time / 2.f, m_gravity);
+    }
+
+    //позиційна корекція
+    for (std::shared_ptr<CollisionPair> collision : collisions)
+    {
+        collision->PositionalCorrection();
+    }
+
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     for (std::shared_ptr<CollisionPair>& collision : collisions)
     {
-        if (collision->bodyA.GetAdittionalData() != "key")collision->bodyA.SetAdittionalData("Collision");
-        if (collision->bodyB.GetAdittionalData() != "key")collision->bodyB.SetAdittionalData("Collision");
+        collision->GetBodyA().SetAdittionalData((collision->GetBodyA().GetAdittionalData() == "key" || collision->GetBodyA().GetAdittionalData() == "keyCollision") ? "keyCollision" : "Collision");
+        collision->GetBodyB().SetAdittionalData((collision->GetBodyB().GetAdittionalData() == "key" || collision->GetBodyB().GetAdittionalData() == "keyCollision") ? "keyCollision" : "Collision");
     }
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ////вирішуємо колізію шляхом надання імпульсу
-    ////повторюємо дію iterNum кількість разів
-    //for (int j = 0; j < iterNum; ++j)
-    //    for (int i = 0; i < collisions.size(); ++i)
-    //        collisions[i]->FixCollision();
 
-    ////оновлюємо позицію тіла за певний проміжок часу
-    //for (int i = 0; i < m_bodies.size(); ++i)
-    //    m_bodies[i].CalculatePos(time);
-
-    ////позиційна корекція
-    //for (int i = 0; i < collisions.size(); ++i)
-    //    collisions[i]->PositionalCorrection();
 
     //очищуємо список колізій
     collisions.clear();
+
+    for (Body& body : m_bodies)
+    {
+        body.ClearForces();
+        body.SetTorque(0.f);
+    }
 }
 
 
@@ -117,4 +136,23 @@ void World::FindCollisions()
 
     //підраховуємо загальну кількість колізій
     //numOfColl += collisions.size();
+}
+
+void World::FixCollision(float time, int iterNum)
+{
+    // обраховуємо коєфіцієнти тертя та відновлення
+    for (std::shared_ptr<CollisionPair>& collision : collisions)
+    {
+        collision->InitProperties(time, m_gravity);
+    }
+
+    //вирішуємо колізію шляхом надання імпульсу
+    //повторюємо дію iterNum кількість разів
+    for (int j = 0; j < iterNum; ++j)
+    {
+        for (std::shared_ptr<CollisionPair>& collision : collisions)
+        {
+            collision->FixCollision(bIsFrictionEnable);
+        }
+    }
 }

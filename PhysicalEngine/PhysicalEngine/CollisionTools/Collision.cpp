@@ -1,6 +1,4 @@
 #include "Collision.h"
-#include "../Shapes/Circle.h"
-#include "../Shapes/Polygon.h"
 
 
 CollisionManifold(*Collision::JumpTable[static_cast<int>(Shape::EType::size)][static_cast<int>(Shape::EType::size)])(const Body& bodyA, const Body& bodyB) =
@@ -54,6 +52,7 @@ CollisionManifold Collision::CircleWithCircle(const Body& bodyA, const Body& bod
     return manifold;    
 }
 
+
 CollisionManifold Collision::CircleWithPolygon(const Body& bodyA, const Body& bodyB)
 {
     return CollisionManifold();
@@ -64,6 +63,7 @@ CollisionManifold Collision::PolygonWithCircle(const Body& bodyA, const Body& bo
 {
     return CircleWithPolygon(bodyB, bodyA);
 }
+
 
 CollisionManifold Collision::PolygonWithPolygon(const Body& bodyA, const Body& bodyB)
 {

@@ -1,21 +1,8 @@
 #pragma once
-#include "../Engine/Body.h"
+#include "Collision.h"
 
 
-
-struct CollisionManifold
-{
-	static constexpr size_t MAX_SIZE = 2;
-
-	float depth;
-	Vector normal;
-	Vector crossPoint[MAX_SIZE];
-	int crossPointsNumber;
-};
-
-
-
-struct CollisionPair
+class CollisionPair
 {
 	struct Properties
 	{
@@ -31,8 +18,19 @@ struct CollisionPair
 	CollisionManifold manifold;
 	Properties props;
 	
+public:
 
 	CollisionPair(Body& a, Body& b, CollisionManifold manifold);
 
+	Body& GetBodyA();
+
+	Body& GetBodyB();
+
+
+
 	void InitProperties(float time, Vector gravity);
+
+	void FixCollision(bool isFrictionEnable);
+
+	void PositionalCorrection();
 };

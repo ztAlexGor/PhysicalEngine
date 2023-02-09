@@ -71,6 +71,8 @@ public:
 
 	float GetAngle() const;
 
+	float GetTorque() const;
+
 	float GetAngularVelocity() const;
 
 	bool IsStatic() const;
@@ -94,6 +96,8 @@ public:
 
 	void SetAngle(float angle);
 
+	void SetTorque(float torque);
+
 	void SetAngularVelocity(float angularVelocity);
 
 	void SetStatic(bool arg);
@@ -110,5 +114,11 @@ public:
 	void AddForce(Vector force);
 
 	void ApplyForces(float time, const Vector& gravity);
+
+	void CalculatePosition(float time);
+
+	void ApplyImpulse(Vector impulse, Vector contactVector);
+
+	void ApplyImpulse(Vector impulse, float time);
 };
 
