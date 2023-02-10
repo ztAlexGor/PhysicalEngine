@@ -131,14 +131,12 @@ void CollisionPair::PositionalCorrection()
     const float k_slop = 0.08f; //допуст проникнення (0.01; 0.1)
     const float percent = 0.5f; //відсоток проникнення, для корекції (0.2; 0.8)
 
-    Vector correction{};
-
     float t = manifold.depth - k_slop;
     if (t > 0) {
-        correction = (t / (bodyA.GetMassInfo().invMass + bodyB.GetMassInfo().invMass)) * manifold.normal * percent;
+        Vector correction = (t / (bodyA.GetMassInfo().invMass + bodyB.GetMassInfo().invMass)) * manifold.normal * percent;
 
-        bodyA.SetPosition(Vector(bodyA.GetPosition()) - correction * bodyA.GetMassInfo().invMass);
-        bodyB.SetPosition(Vector(bodyB.GetPosition()) + correction * bodyB.GetMassInfo().invMass);
+        if (!bodyA.IsStatic())bodyA.SetPosition(Vector(bodyA.GetPosition()) - correction * bodyA.GetMassInfo().invMass);
+        if (!bodyB.IsStatic())bodyB.SetPosition(Vector(bodyB.GetPosition()) + correction * bodyB.GetMassInfo().invMass);
     }
 }
 

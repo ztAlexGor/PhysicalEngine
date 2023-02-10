@@ -1,6 +1,6 @@
 #pragma once
 #include "Body.h"
-#include "../CollisionTools/Collision.h"
+#include "../CollisionTools/CollisionStructs.h"
 #include <vector>
 #include <memory>
 
@@ -10,7 +10,7 @@ class World
 	Vector m_gravity;
 	std::vector<Body>m_bodies;
 	std::vector<Vector> m_forces;
-
+	bool bIsFrictionEnable;
 
 	std::vector<std::shared_ptr<CollisionPair>> collisions;
 
@@ -45,5 +45,7 @@ public:
 
 private:
 	void FindCollisions();
+
+	void FixCollision(float time, int iterNum);
 };
 

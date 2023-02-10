@@ -26,8 +26,6 @@ public:
 
 	Body& GetBodyB();
 
-
-
 	void InitProperties(float time, Vector gravity);
 
 	void FixCollision(bool isFrictionEnable);

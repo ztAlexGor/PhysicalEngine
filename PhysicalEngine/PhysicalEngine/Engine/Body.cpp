@@ -155,6 +155,8 @@ void Body::ClearForces()
 
 void Body::AddForce(Vector force)
 {
+	if (bIsStatic)return;
+
 	m_resultForce += force;
 	m_forces.emplace_back(force);
 }
@@ -180,13 +182,16 @@ void Body::CalculatePosition(float time)
 
 void Body::ApplyImpulse(Vector impulse, Vector contactVector)
 {
+	if (bIsStatic)return;
+
 	m_velocity += impulse * m_massInfo.invMass;
 	m_angularVelocity += m_massInfo.invInertia * Vector::CrossProduct(contactVector, impulse);
 }
 
 void Body::ApplyImpulse(Vector impulse, float time)
 {
+	if (bIsStatic)return;
+
 	m_velocity += impulse * m_massInfo.invMass;
-	m_position += m_velocity * time;
 }
 
