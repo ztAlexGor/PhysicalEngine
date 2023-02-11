@@ -41,7 +41,7 @@ void CollisionPair::InitProperties(float time, Vector gravity)
             props.restitution = 0.f;
 
         // TODO
-        if (bodyA.GetGravityScale() != 1.f || bodyB.GetGravityScale() != 1.f)throw "gravity scale doesn't considered";
+        //if (bodyA.GetGravityScale() != 1.f || bodyB.GetGravityScale() != 1.f)throw "gravity scale doesn't considered";
     }
 }
 
