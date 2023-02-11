@@ -69,7 +69,9 @@ public:
 
 	Vector GetVelocity() const;
 
-	float GetAngle() const;
+	float GetAngleR() const;
+
+	float GetAngleD() const;
 
 	float GetTorque() const;
 
@@ -94,7 +96,9 @@ public:
 
 	void SetVelocity(Vector velocity);
 
-	void SetAngle(float angle);
+	void SetAngleR(float angle);
+
+	void SetAngleD(float angle);
 
 	void SetTorque(float torque);
 

@@ -1,4 +1,6 @@
 #include "Body.h"
+#include <numbers>
+
 
 Body::Body(const BodyInit& init)
 {
@@ -51,9 +53,14 @@ Vector Body::GetVelocity() const
 	return m_velocity;
 }
 
-float Body::GetAngle() const
+float Body::GetAngleR() const
 {
 	return m_angle;
+}
+
+float Body::GetAngleD() const
+{
+	return m_angle * 180.f / std::numbers::pi;
 }
 
 float Body::GetTorque() const
@@ -106,9 +113,15 @@ void Body::SetVelocity(Vector velocity)
 	m_velocity = velocity;
 }
 
-void Body::SetAngle(float angle)
+void Body::SetAngleR(float angle)
 {
 	m_angle = angle;
+	m_shape->Rotate(m_angle);
+}
+
+void Body::SetAngleD(float angle)
+{
+	m_angle = angle / 180.f * std::numbers::pi;
 	m_shape->Rotate(m_angle);
 }
 
@@ -177,14 +190,14 @@ void Body::CalculatePosition(float time)
 	if (bIsStatic)return;
 
 	m_position += m_velocity * time;
-	SetAngle(m_angle + m_angularVelocity * time);
+	SetAngleR(m_angle + m_angularVelocity * time);
 }
 
 void Body::ApplyImpulse(Vector impulse, Vector contactVector)
 {
 	if (bIsStatic)return;
 
-	m_velocity += impulse * m_massInfo.invMass;
+	m_velocity += m_massInfo.invMass * impulse;
 	m_angularVelocity += m_massInfo.invInertia * Vector::CrossProduct(contactVector, impulse);
 }
 

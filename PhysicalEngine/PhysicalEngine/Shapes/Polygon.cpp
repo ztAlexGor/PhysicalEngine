@@ -110,10 +110,10 @@ MassInfo Polygon::ComputeMass(float density) const
 {
     float inertiaCoef = 0.0f;
 
-    for (int i1 = 0; i1 < vertices.size(); ++i1)
+    for (int i = 0; i < vertices.size(); ++i)
     {
-        const Vector& p1 = vertices[i1];
-        const Vector& p2 = vertices[i1 + 1 < vertices.size() ? i1 + 1 : 0];
+        const Vector& p1 = vertices[i];
+        const Vector& p2 = vertices[i + 1 < vertices.size() ? i + 1 : 0];
 
         float intx2 = p1.x * p1.x + p2.x * p1.x + p2.x * p2.x;
         float inty2 = p1.y * p1.y + p2.y * p1.y + p2.y * p2.y;
@@ -136,7 +136,7 @@ Shape* Polygon::Clone() const
 
 void Polygon::Rotate(float angle)
 {
-    matrix.Set(angle / 180.f * std::numbers::pi);
+    matrix.Set(angle);
 }
 
 
