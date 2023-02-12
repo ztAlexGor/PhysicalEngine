@@ -1,6 +1,18 @@
 #include "Collision.h"
 
 
+inline bool BiasGreaterThan(float a, float b)
+{
+    const float k_biasRelative = 0.95f;
+    const float k_biasAbsolute = 0.01f;
+    return a >= b * k_biasRelative + a * k_biasAbsolute;
+}
+
+
+
+CollisionManifold::CollisionManifold() : depth(-INFINITY), crossPointsNumber(0) {}
+
+
 CollisionManifold(*Collision::JumpTable[static_cast<int>(Shape::EType::size)][static_cast<int>(Shape::EType::size)])(const Body& bodyA, const Body& bodyB) =
 {
     Collision::CircleWithCircle,
@@ -156,15 +168,235 @@ CollisionManifold Collision::CircleWithPolygon(const Body& bodyA, const Body& bo
 
 CollisionManifold Collision::PolygonWithCircle(const Body& bodyA, const Body& bodyB)
 {
-    return CircleWithPolygon(bodyB, bodyA);
+    CollisionManifold manifold = CircleWithPolygon(bodyB, bodyA);
+    manifold.normal = -manifold.normal;
+    return manifold;
 }
 
 
 CollisionManifold Collision::PolygonWithPolygon(const Body& bodyA, const Body& bodyB)
 {
-    return CollisionManifold();
+    //дані про колізію
+    CollisionManifold manifold;
+
+    //отримуємо два многокутника
+    const Polygon* r1 = dynamic_cast<const Polygon*>(bodyA.GetShape());
+    const Polygon* r2 = dynamic_cast<const Polygon*>(bodyB.GetShape());
+
+    //перевіряємо наявність розділової осі на основі нормалей r1
+    //шукаємо "лицьове" ребро та глибину проникнення для r1
+    int faceA;
+    float penetrationA = FindAxisLeastPenetration(&faceA, r1, r2, &bodyA, &bodyB);
+
+    if (penetrationA >= 0.0f)
+        return manifold;
+
+    //перевіряємо наявність розділової осі на основі нормалей r2
+    //шукаємо "лицьове" ребро та глибину проникнення для r2
+    int faceB;
+    float penetrationB = FindAxisLeastPenetration(&faceB, r2, r1, &bodyB, &bodyA);
+
+    if (penetrationB >= 0.0f)
+        return manifold;
+
+
+    int referenceIndex;
+    bool flip; //змінна вказує чи напрямок від r1 до r2
+
+    const Polygon* RefPoly; //референтний многокутник
+    const Polygon* IncPoly; //інцидентний многокутник
+    const Body* RefPolyBody;
+    const Body* IncPolyBody;
+
+    //визначаємо референтний та інцидентний многокутник
+    if (BiasGreaterThan(penetrationA, penetrationB)) {
+        RefPoly = r1;
+        IncPoly = r2;
+        RefPolyBody = &bodyA;
+        IncPolyBody = &bodyB;
+        referenceIndex = faceA;
+        flip = false;
+    }
+    else {
+        RefPoly = r2;
+        IncPoly = r1;
+        RefPolyBody = &bodyB;
+        IncPolyBody = &bodyA;
+        referenceIndex = faceB;
+        flip = true;
+    }
+
+    //шукаємо вершини інцидентного ребра у глобальних координатах
+    Vector incidentFace[2];
+    FindIncidentFace(incidentFace, RefPoly, IncPoly, RefPolyBody, IncPolyBody, RefPoly->GetNormals()[referenceIndex]);
+
+    //отримуємо дві вершини референтного многокутника
+    Vector v1 = RefPoly->GetVertices()[referenceIndex];
+    referenceIndex = referenceIndex + 1 == RefPoly->GetVertices().size() ? 0 : referenceIndex + 1;
+    Vector v2 = RefPoly->GetVertices()[referenceIndex];
+
+    //трансформуємо їх до глобальної СК
+    v1 = RefPoly->GetMatrix() * Vector(v1) + Vector(RefPolyBody->GetPosition());
+    v2 = RefPoly->GetMatrix() * Vector(v2) + Vector(RefPolyBody->GetPosition());
+
+    //направляючий вектор референтного ребра у глобальній СК
+    Vector sidePlaneNormal = Vector(v2 - v1);
+    sidePlaneNormal.Normalize();
+
+    //отримуємо референтну зовнішню нормаль шляхом повороту на 90 градусів
+    Vector refFaceNormal(sidePlaneNormal.y, -sidePlaneNormal.x);
+
+    // ax + by = c
+    // c - відстань до початку глобальної СК
+    float refC = Vector::DotProduct(refFaceNormal, Vector(v1));
+    float negSide = -Vector::DotProduct(sidePlaneNormal, Vector(v1));
+    float posSide = Vector::DotProduct(sidePlaneNormal, Vector(v2));
+
+    //обрізаємо інцидентне ребро продовженнями референтних ребер
+    if (Clip(-sidePlaneNormal, negSide, incidentFace) < 2)
+        return manifold; //через похибку збереження даних у float точок можн не бути
+
+    if (Clip(sidePlaneNormal, posSide, incidentFace) < 2)
+        return manifold; //через похибку збереження даних у float точок можн не бути
+
+    //якщо потрібно, перевертаємо нормаль
+    manifold.normal = flip ? -refFaceNormal : refFaceNormal;
+
+    //збережемо точки, що знаходяться всередині многокутника
+    int cp = 0; //лічільник точок
+    float separation = Vector::DotProduct(refFaceNormal, incidentFace[0]) - refC;
+    if (separation <= 0.0f) {
+        manifold.crossPoint[cp] = incidentFace[0];
+        manifold.depth = -separation;
+        ++cp;
+    }
+    else
+        manifold.depth = 0;
+
+    separation = Vector::DotProduct(refFaceNormal, incidentFace[1]) - refC;
+    if (separation <= 0.0f) {
+        manifold.crossPoint[cp] = incidentFace[1];
+
+        manifold.depth -= separation;
+        ++cp;
+
+        //розраховуємо середнє проникнення
+        manifold.depth /= (float)cp;
+    }
+
+    manifold.crossPointsNumber = cp;
+
+    return manifold;
 }
 
 
+float Collision::FindAxisLeastPenetration(int* faceIndex, const Polygon* polygonA, const Polygon* polygonB, const Body* bodyA, const Body* bodyB)
+{
+    float bestDistance = -INFINITY;
+    int bestIndex = -1;
 
+    //отримуємо список нормалей та вершин многокутника
+    const std::vector<Vector>& norm = polygonA->GetNormals();
+    const std::vector<Vector>& vert = polygonA->GetVertices();
+
+    //для кожного ребра знаходимо відстань "заглиблення"
+    for (int i = 0; i < vert.size(); ++i)
+    {
+        //отримуємо зовнішню нормаль
+        Vector n = norm[i];
+        //трансформуємо її у глобальну систему координат
+        Vector nw = polygonA->GetMatrix() * n;
+
+        //трансформуємо її у систему координат другого многокутника
+        Matrix buT = polygonB->GetMatrix().Transpose();
+        n = buT * nw;
+
+        //шукаємо опорну точку у напрямку протилежному до зовнішньої нормалі
+        Vector s(polygonB->GetSupportPoint(-n));
+
+        //отримуємо вершину що належить ребру "і" та
+        //трансформуємо її у систему координат многокутника B
+        Vector v(vert[i]);
+        v = polygonA->GetMatrix() * v + Vector(bodyA->GetPosition());
+        v -= Vector(bodyB->GetPosition());
+        v = buT * v;
+
+        //обчислюємо "знакову" відстань між вершинами у напрямку нормалі
+        float d = Vector::DotProduct(n, s - v);
+
+        //зберігаємо найбільший результат
+        if (d > bestDistance)
+        {
+            bestDistance = d;
+            bestIndex = i;
+        }
+    }
+
+    *faceIndex = bestIndex;
+    return bestDistance;
+}
+
+
+void Collision::FindIncidentFace(Vector* v, const Polygon* RefPoly, const Polygon* IncPoly, const Body* Ab, const Body* Bb, Vector referenceNormal)
+{
+    //отримуємо нормалі та вершини інцидентного многокутника
+    const std::vector<Vector>& norm = IncPoly->GetNormals();
+    const std::vector<Vector>& vert = IncPoly->GetVertices();
+
+    //трансформуємо нормаль reference до системи координат incident
+    referenceNormal = RefPoly->GetMatrix() * referenceNormal; //до глобальної СК
+    referenceNormal = IncPoly->GetMatrix().Transpose() * referenceNormal; //до СК incident
+
+    //шукаємо найвіддаленіше у протилежному до нормалі напрямку ребро многокутника incident
+    int incidentFace = 0;
+    float minDot = INFINITY;
+    for (int i = 0; i < vert.size(); ++i)
+    {
+        float dot = Vector::DotProduct(referenceNormal, norm[i]);
+
+        if (dot < minDot)
+        {
+            minDot = dot;
+            incidentFace = i;
+        }
+    }
+
+    //зберігаємо дві вершини знайденого ребра в глобальній СК
+    v[0] = IncPoly->GetMatrix() * Vector(vert[incidentFace]) + Vector(Bb->GetPosition());
+    incidentFace = incidentFace + 1 < vert.size() ? incidentFace + 1 : 0;
+    v[1] = IncPoly->GetMatrix() * Vector(vert[incidentFace]) + Vector(Bb->GetPosition());
+}
+
+int Collision::Clip(Vector n, float c, Vector* face) {
+    int sp = 0;
+    Vector out[2] = {
+        face[0],
+        face[1]
+    };
+
+    //отримуємо відстані від кожної кінцевої точки до лінії
+    // d = ax + by - c
+    float d1 = Vector::DotProduct(n, face[0]) - c;
+    float d2 = Vector::DotProduct(n, face[1]) - c;
+
+    //якщо від'ємна відстань, то точка не в межах многокутника. Обрізаємо
+    if (d1 <= 0.0f) out[sp++] = face[0];
+    if (d2 <= 0.0f) out[sp++] = face[1];
+
+    //якщо точки по різні стороні від ребра
+    if (d1 * d2 < 0.0f) {
+        //додаємо точку перетину із ребром
+        float alpha = d1 / (d1 - d2);
+        out[sp] = face[0] + alpha * (face[1] - face[0]);
+        sp++;
+    }
+
+    //зберігаємо знайдені значення
+    face[0] = out[0];
+    face[1] = out[1];
+
+    if (sp == 3)throw "Wrong points count";
+
+    return sp;
+}
 

@@ -14,6 +14,8 @@ struct CollisionManifold
 	Vector normal;
 	Vector crossPoint[MAX_SIZE];
 	int crossPointsNumber;
+
+	CollisionManifold();
 };
 
 
@@ -25,6 +27,7 @@ class Collision
 public:
 	static CollisionManifold CheckCollision(const Body& bodyA, const Body& bodyB);
 
+private:
 	static CollisionManifold CircleWithCircle(const Body& bodyA, const Body& bodyB);
 
 	static CollisionManifold CircleWithPolygon(const Body& bodyA, const Body& bodyB);
@@ -32,5 +35,11 @@ public:
 	static CollisionManifold PolygonWithCircle(const Body& bodyA, const Body& bodyB);
 
 	static CollisionManifold PolygonWithPolygon(const Body& bodyA, const Body& bodyB);
+
+	static float FindAxisLeastPenetration(int* faceIndex, const Polygon* polygonA, const Polygon* polygonB, const Body* bodyA, const Body* bodyB);
+
+	static void FindIncidentFace(Vector* v, const Polygon* RefPoly, const Polygon* IncPoly, const Body* Ab, const Body* Bb, Vector referenceNormal);
+
+	static int Clip(Vector n, float c, Vector* face);
 };
 
