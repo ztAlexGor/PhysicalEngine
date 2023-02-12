@@ -19,6 +19,8 @@ public:
 
 	void SetGravity(Vector gravity);
 
+	void SetFrictionEnable(bool arg);
+
 	void AddBody(Body body);
 
 	void DeleteAllBodies();
@@ -30,6 +32,8 @@ public:
 	void ClearForces();
 
 	Vector GetGravity() const;
+
+	bool IsFrictionEnable() const;
 
 	std::vector<Body>& GetBodies();
 

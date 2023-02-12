@@ -88,7 +88,7 @@ public:
 	Shape::EType GetShapeType() const;
 
 	// setters
-	void SetShape(Shape* shape, MaterialInfo material, float density);
+	void SetShape(Shape* shape, const MaterialInfo material, const float density);
 
 	void SetMaterial(MaterialInfo material);
 

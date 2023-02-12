@@ -13,7 +13,7 @@ class Polygon : public Shape
 public:
 	Polygon(std::vector<Vector> vertices);
 
-	Polygon(float width, float height, float angle);
+	Polygon(float width, float height);
 
 	Polygon(Polygon& other);
 
@@ -30,6 +30,8 @@ public:
 	virtual Shape* Clone() const override;
 
 	void Rotate(float angle) override;
+
+	Vector GetSupportPoint(const Vector& normal) const;
 	
 	Vector GetCentroid() const;
 private:

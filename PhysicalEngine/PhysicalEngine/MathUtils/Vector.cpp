@@ -42,8 +42,13 @@ float Vector::SqLength() const
 Vector& Vector::Normalize()
 {
 	float length = Length();
-	x /= length;
-	y /= length;
+
+	if (length != 0)
+	{
+		x /= length;
+		y /= length;
+	}
+
 	return *this;
 }
 

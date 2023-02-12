@@ -6,7 +6,7 @@ Body::Body(const BodyInit& init)
 {
 	m_position = init.position;
 	m_velocity = init.velocity;
-	m_angle = init.angle;
+	m_angle = init.angle / 180 * std::numbers::pi;
 	m_torque = init.torque;
 	m_angularVelocity = init.angularVelocity;
 	bIsStatic = init.bIsStatic;
@@ -21,9 +21,10 @@ Body::Body(const BodyInit& init)
 	m_resultForce.SetZero();
 }
 
-void Body::SetShape(Shape* shape, MaterialInfo shapeMaterial, float density)
+void Body::SetShape(Shape* shape, const MaterialInfo shapeMaterial, const float density)
 {
 	m_shape = shape->Clone();
+	SetAngleR(m_angle);
 	m_material = shapeMaterial;
 	m_massInfo = m_shape->ComputeMass(density);
 }

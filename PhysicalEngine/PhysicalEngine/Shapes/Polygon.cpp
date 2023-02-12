@@ -36,7 +36,7 @@ Polygon::Polygon(std::vector<Vector> listOfVertices) : Shape(EType::polygon), ve
 }
 
 
-Polygon::Polygon(float width, float height, float angle) : Shape(EType::polygon)
+Polygon::Polygon(float width, float height) : Shape(EType::polygon)
 {
     if (width <= 0 || height <= 0)throw std::logic_error("Incorrect rectangle size");
 
@@ -137,6 +137,26 @@ Shape* Polygon::Clone() const
 void Polygon::Rotate(float angle)
 {
     matrix.Set(angle);
+}
+
+Vector Polygon::GetSupportPoint(const Vector& normal) const
+{
+    double bestProjection = -INFINITY;
+    Vector bestVertex;
+
+    //для кожної вершини многокутника обислюємо її відстань у заданому напрямку
+    for (const Vector& vertex : vertices)
+    {
+        double projection = Vector::DotProduct(vertex, normal);
+
+        //запам'ятовуємо найвіддаленішу вершину
+        if (projection > bestProjection)
+        {
+            bestProjection = projection;
+            bestVertex = vertex;
+        }
+    }
+    return bestVertex;
 }
 
 

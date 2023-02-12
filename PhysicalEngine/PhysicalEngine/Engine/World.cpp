@@ -5,6 +5,11 @@ void World::SetGravity(Vector gravity)
 	m_gravity = std::move(gravity);
 }
 
+void World::SetFrictionEnable(bool arg)
+{
+    bIsFrictionEnable = arg;
+}
+
 void World::AddBody(Body body)
 {
 	m_bodies.emplace_back(body);
@@ -28,6 +33,11 @@ void World::ClearForces()
 Vector World::GetGravity() const
 {
 	return m_gravity;
+}
+
+bool World::IsFrictionEnable() const
+{
+    return bIsFrictionEnable;
 }
 
 std::vector<Body>& World::GetBodies()
@@ -133,7 +143,9 @@ void World::FindCollisions()
             //}
         }
     }
-
+    if (collisions.size() > 3) {
+        int a = 0;
+    }
     //підраховуємо загальну кількість колізій
     //numOfColl += collisions.size();
 }
