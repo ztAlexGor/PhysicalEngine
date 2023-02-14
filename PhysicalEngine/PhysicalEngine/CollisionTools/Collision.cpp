@@ -84,17 +84,19 @@ CollisionManifold Collision::CircleWithPolygon(const Body& bodyA, const Body& bo
 
     //знаходимо "лицьове" ребро
     //принцип схожий на використання опорних точок
-    float separation = -9999999;
+    float separation = -INFINITY;
     int faceNormal = 0;
-    for (int i = 0; i < normals.size(); ++i) {
-        float s = Vector::DotProduct(normals[i], Vector(center - vertecies[i]));
+    for (int i = 0; i < normals.size(); ++i)
+    {
+        float s = Vector::DotProduct(normals[i], center - vertecies[i]);
 
         //якщо радіус меньший ніж відстань від центру до ребра,
         //то об'єкти не перетинаються
         if (s > circle->GetRadius())
             return manifold;
 
-        if (s > separation) {
+        if (s > separation)
+        {
             separation = s;
             faceNormal = i;
         }
@@ -107,7 +109,8 @@ CollisionManifold Collision::CircleWithPolygon(const Body& bodyA, const Body& bo
 
     //перевіряємо чи знаходиться центр всередині прямокутника
     //якщо separation від'ємне або близьке до нуля, то центр всередині або на ребрі
-    if (separation < 0.0001) {
+    if (separation < 0.0001)
+    {
         manifold.crossPointsNumber = 1;
         manifold.normal = -(polygon->GetMatrix() * normals[faceNormal]);
         manifold.crossPoint[0] = manifold.normal * circle->GetRadius() + bodyA.GetPosition();
@@ -116,12 +119,13 @@ CollisionManifold Collision::CircleWithPolygon(const Body& bodyA, const Body& bo
     }
 
     //визначаємо у якій області знаходиться центр кола
-    float dot1 = Vector::DotProduct(Vector(center - v1), Vector(v2 - v1));
-    float dot2 = Vector::DotProduct(Vector(center - v2), Vector(v1 - v2));
+    float dot1 = Vector::DotProduct(center - v1, v2 - v1);
+    float dot2 = Vector::DotProduct(center - v2, v1 - v2);
     manifold.depth = circle->GetRadius() - separation;
 
     //центр кола ближче до вершини V1
-    if (dot1 <= 0.0f) {
+    if (dot1 <= 0.0f)
+    {
         if (Vector(center - v1).SqLength() > circle->GetRadius() * circle->GetRadius())
             return manifold;
 
@@ -137,14 +141,15 @@ CollisionManifold Collision::CircleWithPolygon(const Body& bodyA, const Body& bo
     }
 
     //центр кола ближче до вершини V2
-    else if (dot2 <= 0.0f) {
+    else if (dot2 <= 0.0f)
+    {
         if (Vector(center - v2).SqLength() > circle->GetRadius() * circle->GetRadius())
             return manifold;
 
         manifold.crossPointsNumber = 1;
         Vector n(v2 - center);
         manifold.depth = circle->GetRadius() - n.Length();
-        v2 = polygon->GetMatrix() * Vector(v2) + Vector(bodyB.GetPosition());
+        v2 = polygon->GetMatrix() * v2 + bodyB.GetPosition();
         manifold.crossPoint[0] = v2;
         n = polygon->GetMatrix() * n;
         n.Normalize();
@@ -152,14 +157,15 @@ CollisionManifold Collision::CircleWithPolygon(const Body& bodyA, const Body& bo
     }
 
     //центр кола знаходиться між V1 та V2
-    else {
+    else
+    {
         Vector n = normals[faceNormal];
-        if (Vector::DotProduct(Vector(center - v1), n) > circle->GetRadius())
+        if (Vector::DotProduct(center - v1, n) > circle->GetRadius())
             return manifold;
 
         n = polygon->GetMatrix() * n;
         manifold.normal = -n;
-        manifold.crossPoint[0] = manifold.normal * circle->GetRadius() + Vector(bodyA.GetPosition());
+        manifold.crossPoint[0] = manifold.normal * circle->GetRadius() + bodyA.GetPosition();
         manifold.crossPointsNumber = 1;
     }
     return manifold;
@@ -254,10 +260,10 @@ CollisionManifold Collision::PolygonWithPolygon(const Body& bodyA, const Body& b
 
     //обрізаємо інцидентне ребро продовженнями референтних ребер
     if (Clip(-sidePlaneNormal, negSide, incidentFace) < 2)
-        return manifold; //через похибку збереження даних у float точок можн не бути
+        return manifold; //через похибку збереження даних у float точок може не бути
 
     if (Clip(sidePlaneNormal, posSide, incidentFace) < 2)
-        return manifold; //через похибку збереження даних у float точок можн не бути
+        return manifold; //через похибку збереження даних у float точок може не бути
 
     //якщо потрібно, перевертаємо нормаль
     manifold.normal = flip ? -refFaceNormal : refFaceNormal;

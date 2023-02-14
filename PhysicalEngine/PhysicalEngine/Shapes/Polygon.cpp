@@ -122,7 +122,7 @@ MassInfo Polygon::ComputeMass(float density) const
 
     float mass = area * density;
     float inertia = inertiaCoef * density;
-
+    
     MassInfo massInfo{ .mass{mass}, .invMass{1.f / mass}, .inertia{inertia}, .invInertia{1.f / inertia} };
     return massInfo;
 }
