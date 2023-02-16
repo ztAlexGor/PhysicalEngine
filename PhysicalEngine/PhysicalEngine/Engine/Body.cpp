@@ -164,6 +164,7 @@ void Body::SetAdittionalData(std::string data)
 void Body::ClearForces()
 {
 	m_forces.clear();
+	m_resultForce.SetZero();
 }
 
 
@@ -182,8 +183,6 @@ void Body::ApplyForces(float time, const Vector& gravity)
 
 	m_velocity += (m_resultForce * m_massInfo.invMass + gravity * m_gravityScale) * time;
 	m_angularVelocity += m_torque * m_massInfo.invInertia * time;
-
-	if (m_torque != 0)throw 1;
 }
 
 void Body::CalculatePosition(float time)
@@ -202,10 +201,15 @@ void Body::ApplyImpulse(Vector impulse, Vector contactVector)
 	m_angularVelocity += m_massInfo.invInertia * Vector::CrossProduct(contactVector, impulse);
 }
 
-void Body::ApplyImpulse(Vector impulse, float time)
+void Body::ApplyImpulse(Vector impulse)
 {
 	if (bIsStatic)return;
 
 	m_velocity += impulse * m_massInfo.invMass;
 }
 
+
+bool Body::IsPointInShape(const Vector& point)const
+{
+	return m_shape->IsPointInShape(point - m_position);
+}

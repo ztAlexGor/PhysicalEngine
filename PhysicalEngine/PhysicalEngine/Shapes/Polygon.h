@@ -4,11 +4,11 @@
 
 class Polygon : public Shape
 {
-	std::vector<Vector> vertices;
-	std::vector<Vector> edges;
-	std::vector<Vector> normals;
+	std::vector<Vector> m_vertices;
+	std::vector<Vector> m_edges;
+	std::vector<Vector> m_normals;
 	// Vector centroid;
-	float area;
+	float m_area;
 
 public:
 	Polygon(std::vector<Vector> vertices);
@@ -30,6 +30,8 @@ public:
 	virtual Shape* Clone() const override;
 
 	void Rotate(float angle) override;
+
+	bool IsPointInShape(const Vector point) const override;
 
 	Vector GetSupportPoint(const Vector& normal) const;
 	

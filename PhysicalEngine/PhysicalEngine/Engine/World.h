@@ -15,7 +15,7 @@ class World
 	std::vector<std::shared_ptr<CollisionPair>> collisions;
 
 public:
-	World() = default;
+	World();
 
 	void SetGravity(Vector gravity);
 

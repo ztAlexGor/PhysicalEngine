@@ -123,6 +123,8 @@ public:
 
 	void ApplyImpulse(Vector impulse, Vector contactVector);
 
-	void ApplyImpulse(Vector impulse, float time);
+	void ApplyImpulse(Vector impulse);
+
+	bool IsPointInShape(const Vector& point)const;
 };
 

@@ -1,6 +1,6 @@
 #include "Circle.h"
 
-Circle::Circle(float radius) : Shape(EType::circle), radius(radius)
+Circle::Circle(float radius) : Shape(EType::circle), m_radius(radius)
 {
 	InitAABB();
 }
@@ -8,26 +8,26 @@ Circle::Circle(float radius) : Shape(EType::circle), radius(radius)
 
 float Circle::GetRadius() const
 {
-	return radius;
+	return m_radius;
 }
 
 
 void Circle::SetRadius(float radius)
 {
-	this->radius = radius;
+	m_radius = radius;
 }
 
 
 void Circle::InitAABB()
 {
-	aabb = AABB(Vector(-radius, -radius), Vector(radius, radius));
+	aabb = AABB(Vector(-m_radius, -m_radius), Vector(m_radius, m_radius));
 }
 
 
 MassInfo Circle::ComputeMass(float density) const
 {
-	float mass = PI * radius * radius * density;
-	float inertia = mass * radius * radius / 2.f;
+	float mass = PI * m_radius * m_radius * density;
+	float inertia = mass * m_radius * m_radius / 2.f;
 
 	MassInfo massInfo{ .mass{mass}, .invMass{1.f / mass}, .inertia{inertia}, .invInertia{1.f / inertia} };
 	return massInfo;
@@ -37,4 +37,9 @@ MassInfo Circle::ComputeMass(float density) const
 Shape* Circle::Clone() const
 {
 	return new Circle(*this);
+}
+
+bool Circle::IsPointInShape(const Vector point) const
+{
+	return point.SqLength() < m_radius * m_radius;
 }

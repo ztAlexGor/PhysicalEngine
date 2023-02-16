@@ -1,5 +1,10 @@
 #include "World.h"
 
+World::World()
+{
+    bIsFrictionEnable = true;
+}
+
 void World::SetGravity(Vector gravity)
 {
 	m_gravity = std::move(gravity);
@@ -48,19 +53,6 @@ std::vector<Body>& World::GetBodies()
 
 void World::Step(float time, int iterNum)
 {
-    for (Body& body : m_bodies)
-    {
-        if (body.GetAdittionalData() == "key" || body.GetAdittionalData() == "keyCollision")
-            body.SetAdittionalData("key");
-        else if (body.GetAdittionalData() == "" || body.GetAdittionalData() == "Collision") {
-            body.SetAdittionalData("");
-        }
-        else {
-            int r = 0;
-        }
-    }
-    /////////////////////////////////////////////step///////////////////////////////////////////////////////////
-    
     //застосовуємо усі додаткові сили (наприклад, силу тяжіння) за час = time / 2.f
     for (Body& body : m_bodies)
     {
@@ -93,12 +85,24 @@ void World::Step(float time, int iterNum)
 
 
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    for (std::shared_ptr<CollisionPair>& collision : collisions)
-    {
-        collision->GetBodyA().SetAdittionalData((collision->GetBodyA().GetAdittionalData() == "key" || collision->GetBodyA().GetAdittionalData() == "keyCollision") ? "keyCollision" : "Collision");
-        collision->GetBodyB().SetAdittionalData((collision->GetBodyB().GetAdittionalData() == "key" || collision->GetBodyB().GetAdittionalData() == "keyCollision") ? "keyCollision" : "Collision");
-    }
+    /////////////////////////////////////////////step///////////////////////////////////////////////////////////
+    //for (Body& body : m_bodies)
+    //{
+    //    if (body.GetAdittionalData() == "key" || body.GetAdittionalData() == "keyCollision")
+    //        body.SetAdittionalData("key");
+    //    else if (body.GetAdittionalData() == "" || body.GetAdittionalData() == "Collision") {
+    //        body.SetAdittionalData("");
+    //    }
+    //    else {
+    //        int r = 0;
+    //    }
+    //}
+    //
+    //for (std::shared_ptr<CollisionPair>& collision : collisions)
+    //{
+    //    collision->GetBodyA().SetAdittionalData((collision->GetBodyA().GetAdittionalData() == "key" || collision->GetBodyA().GetAdittionalData() == "keyCollision") ? "keyCollision" : "Collision");
+    //    collision->GetBodyB().SetAdittionalData((collision->GetBodyB().GetAdittionalData() == "key" || collision->GetBodyB().GetAdittionalData() == "keyCollision") ? "keyCollision" : "Collision");
+    //}
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -136,11 +140,6 @@ void World::FindCollisions()
             {
                 collisions.push_back(std::make_shared<CollisionPair>(CollisionPair(a, b, manifold)));
             }
-            //else
-            //{
-            //    // якщо колізії немає, то видаляємо цю пару
-            //    delete collisionPair;
-            //}
         }
     }
     if (collisions.size() > 3) {

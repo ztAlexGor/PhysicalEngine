@@ -3,21 +3,21 @@
 #include <numbers>
 
 
-Polygon::Polygon(std::vector<Vector> listOfVertices) : Shape(EType::polygon), vertices(std::move(listOfVertices))/*, centroid(Vector(0.f, 0.f))*/
+Polygon::Polygon(std::vector<Vector> vertices) : Shape(EType::polygon), m_vertices(std::move(vertices))/*, centroid(Vector(0.f, 0.f))*/
 {
-    if (vertices.size() < 3)throw std::logic_error("List of polygon vertices is incorrect");
+    if (m_vertices.size() < 3)throw std::logic_error("List of polygon vertices is incorrect");
 
     // calculate edges
-    for (int i = 0; i < vertices.size() - 1; ++i)
+    for (int i = 0; i < m_vertices.size() - 1; ++i)
     {
-        edges.emplace_back(vertices[i + 1] - vertices[i]);
+        m_edges.emplace_back(m_vertices[i + 1] - m_vertices[i]);
     }
-    edges.emplace_back(vertices[0] - vertices[vertices.size() - 1]);
+    m_edges.emplace_back(m_vertices[0] - m_vertices[m_vertices.size() - 1]);
 
     // calculate normals
-    for (const Vector& edge : edges)
+    for (const Vector& edge : m_edges)
     {
-        normals.emplace_back(Vector(edge.y, -edge.x).Normalize());
+        m_normals.emplace_back(Vector(edge.y, -edge.x).Normalize());
     }
 
     
@@ -28,7 +28,7 @@ Polygon::Polygon(std::vector<Vector> listOfVertices) : Shape(EType::polygon), ve
     // aling with centroid
     Vector centroid = GetCentroid();
 
-    for (Vector& vertex : vertices) {
+    for (Vector& vertex : m_vertices) {
         vertex -= centroid;
     }
 
@@ -45,49 +45,49 @@ Polygon::Polygon(float width, float height) : Shape(EType::polygon)
 
 
     // calculate vertices
-    vertices.push_back(Vector(-halfW, -halfH));
-    vertices.push_back(Vector( halfW, -halfH));
-    vertices.push_back(Vector( halfW,  halfH));
-    vertices.push_back(Vector(-halfW,  halfH));
+    m_vertices.push_back(Vector(-halfW, -halfH));
+    m_vertices.push_back(Vector( halfW, -halfH));
+    m_vertices.push_back(Vector( halfW,  halfH));
+    m_vertices.push_back(Vector(-halfW,  halfH));
 
     // calculate edges
-    for (int i = 0; i < vertices.size() - 1; ++i)
+    for (int i = 0; i < m_vertices.size() - 1; ++i)
     {
-        edges.emplace_back(vertices[i + 1] - vertices[i]);
+        m_edges.emplace_back(m_vertices[i + 1] - m_vertices[i]);
     }
-    edges.emplace_back(vertices[0] - vertices[vertices.size() - 1]);
+    m_edges.emplace_back(m_vertices[0] - m_vertices[m_vertices.size() - 1]);
 
     // calculate normals
-    for (const Vector& edge : edges)
+    for (const Vector& edge : m_edges)
     {
-        normals.emplace_back(Vector(edge.y, -edge.x).Normalize());
+        m_normals.emplace_back(Vector(edge.y, -edge.x).Normalize());
     }
 
     // calculate area and AABB
-    area = width * height;
+    m_area = width * height;
 
     aabb = AABB(Vector(-halfW, -halfH), Vector(halfW, halfH));
 }
 
 
-Polygon::Polygon(Polygon& other): Polygon(other.vertices) {}
+Polygon::Polygon(Polygon& other): Polygon(other.m_vertices) {}
 
 
 const std::vector<Vector>& Polygon::GetVertices() const
 {
-    return vertices;
+    return m_vertices;
 }
 
 
 const std::vector<Vector>& Polygon::GetEdges() const
 {
-    return edges;
+    return m_edges;
 }
 
 
 const std::vector<Vector>& Polygon::GetNormals() const
 {
-    return normals;
+    return m_normals;
 }
 
 
@@ -96,7 +96,7 @@ void Polygon::InitAABB()
     Vector min(INFINITY, INFINITY);
     Vector max(-INFINITY, -INFINITY);
 
-    for (const Vector& dot : vertices) {
+    for (const Vector& dot : m_vertices) {
         if (min.x > dot.x)min.x = dot.x;
         if (min.y > dot.y)min.y = dot.y;
         if (max.x < dot.x)max.x = dot.x;
@@ -110,17 +110,17 @@ MassInfo Polygon::ComputeMass(float density) const
 {
     float inertiaCoef = 0.0f;
 
-    for (int i = 0; i < vertices.size(); ++i)
+    for (int i = 0; i < m_vertices.size(); ++i)
     {
-        const Vector& p1 = vertices[i];
-        const Vector& p2 = vertices[i + 1 < vertices.size() ? i + 1 : 0];
+        const Vector& p1 = m_vertices[i];
+        const Vector& p2 = m_vertices[i + 1 < m_vertices.size() ? i + 1 : 0];
 
         float intx2 = p1.x * p1.x + p2.x * p1.x + p2.x * p2.x;
         float inty2 = p1.y * p1.y + p2.y * p1.y + p2.y * p2.y;
         inertiaCoef += (Vector::CrossProduct(p1, p2)) / 12.0f * (intx2 + inty2);
     }
 
-    float mass = area * density;
+    float mass = m_area * density;
     float inertia = inertiaCoef * density;
     
     MassInfo massInfo{ .mass{mass}, .invMass{1.f / mass}, .inertia{inertia}, .invInertia{1.f / inertia} };
@@ -130,7 +130,7 @@ MassInfo Polygon::ComputeMass(float density) const
 
 Shape* Polygon::Clone() const
 {
-    return new Polygon(std::vector<Vector>(vertices));
+    return new Polygon(std::vector<Vector>(m_vertices));
 }
 
 
@@ -139,13 +139,27 @@ void Polygon::Rotate(float angle)
     matrix.Set(angle);
 }
 
+
+bool Polygon::IsPointInShape(const Vector point) const
+{
+    for (int i = 0; i < m_vertices.size(); ++i)
+    {
+        if (Vector::DotProduct(m_normals[i], point - m_vertices[i]) > 0)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+
 Vector Polygon::GetSupportPoint(const Vector& normal) const
 {
     double bestProjection = -INFINITY;
     Vector bestVertex;
 
     //для кожної вершини многокутника обислюємо її відстань у заданому напрямку
-    for (const Vector& vertex : vertices)
+    for (const Vector& vertex : m_vertices)
     {
         double projection = Vector::DotProduct(vertex, normal);
 
@@ -162,32 +176,32 @@ Vector Polygon::GetSupportPoint(const Vector& normal) const
 
 void Polygon::InitializeArea()
 {
-    area = 0.0f;
+    m_area = 0.0f;
 
     // Calculate value of shoelace formula
-    int j = vertices.size() - 1;
-    for (int i = 0; i < vertices.size(); ++i)
+    int j = m_vertices.size() - 1;
+    for (int i = 0; i < m_vertices.size(); ++i)
     {
-        area += (vertices[j].x + vertices[i].x) * (vertices[j].y - vertices[i].y);
+        m_area += (m_vertices[j].x + m_vertices[i].x) * (m_vertices[j].y - m_vertices[i].y);
 
         j = i;
     }
-    area /= -2;
+    m_area /= -2;
 }
 
 
 Vector Polygon::GetCentroid() const
 {
     Vector centroid(0.f, 0.f);
-    for (int i = 0; i < vertices.size(); ++i)
+    for (int i = 0; i < m_vertices.size(); ++i)
     {
         int v1 = i;
-        int v2 = i + 1 < vertices.size() ? i + 1 : 0;
+        int v2 = i + 1 < m_vertices.size() ? i + 1 : 0;
 
-        centroid += (vertices[v1] + vertices[v2]) * Vector::CrossProduct(vertices[v1], vertices[v2]);
+        centroid += (m_vertices[v1] + m_vertices[v2]) * Vector::CrossProduct(m_vertices[v1], m_vertices[v2]);
     }                                                                                                      
 
-    return centroid /= 6 * area;
+    return centroid /= 6 * m_area;
 }
 
 

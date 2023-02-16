@@ -7,12 +7,12 @@ const float PI = 3.141593f;
 
 class Circle : public Shape
 {
-	float radius;
+	float m_radius;
 
 public:
 	Circle(float radius);
 
-	Circle(const Circle& other) : Circle(other.radius) {};
+	Circle(const Circle& other) : Circle(other.m_radius) {};
 
 	float GetRadius() const;
 
@@ -23,6 +23,8 @@ public:
 	virtual Shape* Clone() const override;
 
 	void Rotate(float angle) override {};
+
+	bool IsPointInShape(const Vector point) const override;
 
 protected:
 	virtual void InitAABB() override;

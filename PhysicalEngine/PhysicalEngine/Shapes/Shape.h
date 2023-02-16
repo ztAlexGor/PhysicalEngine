@@ -44,6 +44,8 @@ public:
 
 	//virtual ~Shape() = 0;
 
+	virtual bool IsPointInShape(const Vector point) const = 0;
+
 protected:
 	virtual void InitAABB() = 0;
 };
