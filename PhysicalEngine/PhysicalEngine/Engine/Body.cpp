@@ -2,26 +2,26 @@
 #include <numbers>
 
 
-Body::Body(const BodyInit& init)
+Body::Body(const BodyInit& init):
+	m_position(init.position),
+	m_velocity(init.velocity),
+	m_angle(init.angle / 180 * std::numbers::pi),
+	m_torque(init.torque),
+	m_angularVelocity(init.angularVelocity),
+	bIsStatic(init.bIsStatic),
+	m_gravityScale(init.gravityScale),
+	m_adittionalData(init.adittionalData),
+	m_forces(init.forces)
 {
-	m_position = init.position;
-	m_velocity = init.velocity;
-	m_angle = init.angle / 180 * std::numbers::pi;
-	m_torque = init.torque;
-	m_angularVelocity = init.angularVelocity;
-	bIsStatic = init.bIsStatic;
-	m_gravityScale = init.gravityScale;
-	m_adittionalData = init.adittionalData;
-
-	for (Vector f : init.forces)
-	{
-		m_forces.emplace_back(f);
-	}
-
 	m_resultForce.SetZero();
+
+	const Vector v;
+
+	float a = v.x;
+
 }
 
-void Body::SetShape(Shape* shape, const Material shapeMaterial, const float density)
+void Body::SetShape(Shape* shape, const Material& shapeMaterial, float density)
 {
 	m_shape = shape->Clone();
 	SetAngleR(m_angle);

@@ -48,7 +48,7 @@ Matrix Matrix::Transpose() const
 
 const Vector Matrix::operator*(const Vector& other) const
 {
-    return Vector(m00 * other.X() + m01 * other.Y(), m10 * other.X() + m11 * other.Y());
+    return Vector(m00 * other.x + m01 * other.y, m10 * other.x + m11 * other.y);
 }
 
 

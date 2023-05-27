@@ -6,15 +6,11 @@ struct Vector
 	float y;
 	
 public:
-	Vector(const float x, const float y) : x(x), y(y) {};
+	Vector(float x, float y) : x(x), y(y) {};
 
 	Vector() : Vector(0.f, 0.f) {};
 
 	Vector(const Vector& v);
-
-	float X() const;
-
-	float Y() const;
 
 	void Set(float x, float y);
 
