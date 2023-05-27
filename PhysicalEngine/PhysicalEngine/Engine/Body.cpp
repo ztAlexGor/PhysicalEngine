@@ -3,6 +3,7 @@
 
 
 Body::Body(const BodyInit& init):
+	m_shape(nullptr),
 	m_position(init.position),
 	m_velocity(init.velocity),
 	m_angle(init.angle / 180 * std::numbers::pi),
@@ -11,14 +12,9 @@ Body::Body(const BodyInit& init):
 	bIsStatic(init.bIsStatic),
 	m_gravityScale(init.gravityScale),
 	m_adittionalData(init.adittionalData),
-	m_forces(init.forces)
+	m_forces(init.forces),
+	m_massInfo({})
 {
-	m_resultForce.SetZero();
-
-	const Vector v;
-
-	float a = v.x;
-
 }
 
 void Body::SetShape(Shape* shape, const Material& shapeMaterial, float density)
