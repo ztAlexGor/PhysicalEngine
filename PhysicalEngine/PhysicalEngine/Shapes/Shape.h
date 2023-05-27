@@ -35,7 +35,7 @@ public:
 	EType GetType() const;
 
 	Matrix GetMatrix() const;
-		
+
 	virtual MassInfo ComputeMass(float density) const = 0;
 
 	virtual Shape* Clone() const = 0;

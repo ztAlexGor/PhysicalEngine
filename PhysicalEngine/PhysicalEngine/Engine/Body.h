@@ -3,12 +3,24 @@
 #include <vector>
 #include <string>
 
-
-struct MaterialInfo
+struct Material
 {
 	float restitution;
 	float staticFriction;
 	float dynamicFriction;
+
+	static constexpr Material wood() { return Material(0.2f, 0.5f, 0.1f); }
+	static constexpr Material stone() { return Material(0.1, 0.5f, 0.2f); }
+	static constexpr Material elastic() { return Material(1.f, 0.f, 0.f); }
+	static constexpr Material plastic() { return Material(0.3f, 0.4f, 0.2f); }
+
+	constexpr Material()
+		: restitution(0.f), staticFriction(0.f), dynamicFriction(0.f)
+	{}
+
+	constexpr Material(float restitution, float staticFriction, float dynamicFriction)
+		: restitution(restitution), staticFriction(staticFriction), dynamicFriction(dynamicFriction)
+	{}
 };
 
 
@@ -20,7 +32,7 @@ struct BodyInit
 	float torque;
 	float angularVelocity;
 	bool bIsStatic = false;
-	float gravityScale = 1;
+	float gravityScale = 1.f;
 	std::vector<Vector> forces;
 	std::string adittionalData;
 
@@ -28,9 +40,9 @@ struct BodyInit
 	//{
 	//	position = Vector(0.f, 0.f);
 	//	velocity = Vector(0.f, 0.f);
-	//	angle = 0;
-	//	torque = 0;
-	//	angularVelocity = 0;
+	//	angle = 0.f;
+	//	torque = 0.f;
+	//	angularVelocity = 0.f;
 	//	bIsStatic = false;
 	//	float gravityScale = 1.f;
 	//}
@@ -41,7 +53,7 @@ class Body
 {
 	Shape* m_shape;
 	MassInfo m_massInfo;
-	MaterialInfo m_material;
+	Material m_material;
 	
 	Vector m_position;
 	Vector m_velocity;
@@ -63,7 +75,7 @@ public:
 
 	const MassInfo& GetMassInfo() const;
 
-	const MaterialInfo& GetMaterial() const;
+	const Material& GetMaterial() const;
 
 	Vector GetPosition() const;
 
@@ -88,9 +100,9 @@ public:
 	Shape::EType GetShapeType() const;
 
 	// setters
-	void SetShape(Shape* shape, const MaterialInfo material, const float density);
+	void SetShape(Shape* shape, const Material material, const float density);
 
-	void SetMaterial(MaterialInfo material);
+	void SetMaterial(Material material);
 
 	void SetPosition(Vector position);
 
@@ -112,7 +124,7 @@ public:
 
 	void SetAdittionalData(std::string data);
 
-	// main function
+	// main functions
 	void ClearForces();
 
 	void AddForce(Vector force);

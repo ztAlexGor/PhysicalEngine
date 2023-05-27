@@ -91,21 +91,6 @@ const std::vector<Vector>& Polygon::GetNormals() const
 }
 
 
-void Polygon::InitAABB()
-{
-    Vector min(INFINITY, INFINITY);
-    Vector max(-INFINITY, -INFINITY);
-
-    for (const Vector& dot : m_vertices) {
-        if (min.x > dot.x)min.x = dot.x;
-        if (min.y > dot.y)min.y = dot.y;
-        if (max.x < dot.x)max.x = dot.x;
-        if (max.y < dot.y)max.y = dot.y;
-    }
-    aabb = AABB(min, max);
-}
-
-
 MassInfo Polygon::ComputeMass(float density) const
 {
     float inertiaCoef = 0.0f;
@@ -174,22 +159,6 @@ Vector Polygon::GetSupportPoint(const Vector& normal) const
 }
 
 
-void Polygon::InitializeArea()
-{
-    m_area = 0.0f;
-
-    // Calculate value of shoelace formula
-    int j = m_vertices.size() - 1;
-    for (int i = 0; i < m_vertices.size(); ++i)
-    {
-        m_area += (m_vertices[j].x + m_vertices[i].x) * (m_vertices[j].y - m_vertices[i].y);
-
-        j = i;
-    }
-    m_area /= -2;
-}
-
-
 Vector Polygon::GetCentroid() const
 {
     Vector centroid(0.f, 0.f);
@@ -199,7 +168,7 @@ Vector Polygon::GetCentroid() const
         int v2 = i + 1 < m_vertices.size() ? i + 1 : 0;
 
         centroid += (m_vertices[v1] + m_vertices[v2]) * Vector::CrossProduct(m_vertices[v1], m_vertices[v2]);
-    }                                                                                                      
+    }
 
     return centroid /= 6 * m_area;
 }
@@ -215,3 +184,34 @@ Vector Polygon::GetCentroid() const
 //
 //    centroid /= 6 * area;
 //}
+
+
+void Polygon::InitAABB()
+{
+    Vector min(INFINITY, INFINITY);
+    Vector max(-INFINITY, -INFINITY);
+
+    for (const Vector& dot : m_vertices) {
+        if (min.x > dot.x)min.x = dot.x;
+        if (min.y > dot.y)min.y = dot.y;
+        if (max.x < dot.x)max.x = dot.x;
+        if (max.y < dot.y)max.y = dot.y;
+    }
+    aabb = AABB(min, max);
+}
+
+
+void Polygon::InitializeArea()
+{
+    m_area = 0.0f;
+
+    // Calculate value of shoelace formula
+    int j = m_vertices.size() - 1;
+    for (int i = 0; i < m_vertices.size(); ++i)
+    {
+        m_area += (m_vertices[j].x + m_vertices[i].x) * (m_vertices[j].y - m_vertices[i].y);
+
+        j = i;
+    }
+    m_area /= -2;
+}

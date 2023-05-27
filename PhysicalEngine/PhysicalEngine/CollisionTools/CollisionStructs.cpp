@@ -110,7 +110,7 @@ void CollisionPair::FixCollision(bool isFrictionEnable)
             jt /= (float)manifold.crossPointsNumber;
 
             //якщо величина імпульсу дуже мала, то просто ігноруємо її
-            if (abs(jt) < 0.000001)return;
+            if (abs(jt) < 0.0001f)return;
 
             //в залежності від типу тертя імпульс буде різним
             Vector tangentImpulse;
@@ -128,11 +128,11 @@ void CollisionPair::FixCollision(bool isFrictionEnable)
 
 void CollisionPair::PositionalCorrection()
 {
-    const float k_slop = 0.08f; //допуст проникнення (0.01; 0.1)
+    const float k_slop = 0.02f; //допуст проникнення (0.01; 0.1)
     const float percent = 0.5f; //відсоток проникнення, для корекції (0.2; 0.8)
 
     float t = manifold.depth - k_slop;
-    if (t > 0) {
+    if (t > 0.f) {
         Vector correction = (t / (bodyA.GetMassInfo().invMass + bodyB.GetMassInfo().invMass)) * manifold.normal * percent;
 
         if (!bodyA.IsStatic())bodyA.SetPosition(Vector(bodyA.GetPosition()) - correction * bodyA.GetMassInfo().invMass);

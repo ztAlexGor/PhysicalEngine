@@ -30,6 +30,14 @@ void World::AddForce(Vector force)
 	m_forces.emplace_back(force);
 }
 
+void World::SetForces(std::vector<Vector> forces)
+{
+    for (Vector force : forces)
+    {
+        m_forces.emplace_back(force);
+    }
+}
+
 void World::ClearForces()
 {
 	m_forces.clear();
@@ -50,8 +58,23 @@ std::vector<Body>& World::GetBodies()
     return m_bodies;
 }
 
+const std::vector<Body>& World::GetBodies() const
+{
+    return m_bodies;
+}
 
-void World::Step(float time, int iterNum)
+std::vector<Vector>& World::GetForces()
+{
+    return m_forces;
+}
+
+const std::vector<Vector>& World::GetForces() const
+{
+    return m_forces;
+}
+
+
+void World::Step(float time, size_t iterNum)
 {
     //застосовуємо усі додаткові сили (наприклад, силу тяжіння) за час = time / 2.f
     for (Body& body : m_bodies)
@@ -142,9 +165,7 @@ void World::FindCollisions()
             }
         }
     }
-    if (collisions.size() > 3) {
-        int a = 0;
-    }
+
     //підраховуємо загальну кількість колізій
     //numOfColl += collisions.size();
 }

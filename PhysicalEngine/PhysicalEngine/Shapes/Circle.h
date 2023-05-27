@@ -22,9 +22,9 @@ public:
 
 	virtual Shape* Clone() const override;
 
-	void Rotate(float angle) override {};
+	virtual void Rotate(float angle) override {};
 
-	bool IsPointInShape(const Vector point) const override;
+	virtual bool IsPointInShape(const Vector point) const override;
 
 protected:
 	virtual void InitAABB() override;

@@ -23,19 +23,21 @@ public:
 
 	const std::vector<Vector>& GetNormals() const;
 
-	virtual void InitAABB() override;
-
 	virtual MassInfo ComputeMass(float density) const override;
 
 	virtual Shape* Clone() const override;
 
-	void Rotate(float angle) override;
+	virtual void Rotate(float angle) override;
 
-	bool IsPointInShape(const Vector point) const override;
+	virtual bool IsPointInShape(const Vector point) const override;
 
 	Vector GetSupportPoint(const Vector& normal) const;
 	
 	Vector GetCentroid() const;
+
+protected:
+	virtual void InitAABB() override;
+
 private:
 	void InitializeArea();
 

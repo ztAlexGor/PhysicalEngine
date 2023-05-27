@@ -21,7 +21,7 @@ Body::Body(const BodyInit& init)
 	m_resultForce.SetZero();
 }
 
-void Body::SetShape(Shape* shape, const MaterialInfo shapeMaterial, const float density)
+void Body::SetShape(Shape* shape, const Material shapeMaterial, const float density)
 {
 	m_shape = shape->Clone();
 	SetAngleR(m_angle);
@@ -39,7 +39,7 @@ const MassInfo& Body::GetMassInfo() const
 	return m_massInfo;
 }
 
-const MaterialInfo& Body::GetMaterial() const
+const Material& Body::GetMaterial() const
 {
 	return m_material;
 }
@@ -99,7 +99,7 @@ Shape::EType Body::GetShapeType() const
 	return m_shape->GetType();
 }
 
-void Body::SetMaterial(MaterialInfo material)
+void Body::SetMaterial(Material material)
 {
 	m_material = material;
 }
@@ -199,6 +199,12 @@ void Body::ApplyImpulse(Vector impulse, Vector contactVector)
 
 	m_velocity += m_massInfo.invMass * impulse;
 	m_angularVelocity += m_massInfo.invInertia * Vector::CrossProduct(contactVector, impulse);
+
+
+	const float epsilon = 0.001f;// FIX!!! Added because of thinking objects
+	if (abs(m_velocity.x) < epsilon)m_velocity.x = 0.f; // FIX!!! Added because of thinking objects
+	if (abs(m_velocity.y) < epsilon)m_velocity.y = 0.f; // FIX!!! Added because of thinking objects
+	if (abs(m_angularVelocity) < epsilon)m_angularVelocity = 0.f; // FIX!!! Added because of thinking objects
 }
 
 void Body::ApplyImpulse(Vector impulse)

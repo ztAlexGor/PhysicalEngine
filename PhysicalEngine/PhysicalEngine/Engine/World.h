@@ -39,13 +39,13 @@ public:
 
 	const std::vector<Body>& GetBodies() const;
 
-	std::vector<Vector> GetForces();
+	std::vector<Vector>& GetForces();
 
-	const std::vector<Vector> GetForces() const;
+	const std::vector<Vector>& GetForces() const;
 
 
 	// main engine function
-	void Step(float time, int iterNum);
+	void Step(float time, size_t iterNum);
 
 private:
 	void FindCollisions();
