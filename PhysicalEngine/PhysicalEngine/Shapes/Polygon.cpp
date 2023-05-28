@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <numbers>
 #include <algorithm>
+#include <iterator>
 
 
 Polygon::Polygon(std::vector<Vector> vertices) : Shape(EType::polygon), m_vertices(std::move(vertices))/*, centroid(Vector(0.f, 0.f))*/
@@ -16,11 +17,8 @@ Polygon::Polygon(std::vector<Vector> vertices) : Shape(EType::polygon), m_vertic
     m_edges.emplace_back(m_vertices[0] - m_vertices[m_vertices.size() - 1]);
 
     // calculate normals
-    for (const Vector& edge : m_edges)
-    {
-        m_normals.emplace_back(Vector(edge.y, -edge.x).Normalize());
-    }
-
+    std::transform(m_edges.begin(), m_edges.end(), back_inserter(m_normals),
+        [](const Vector& edge) {return Vector(edge.y, -edge.x).Normalize(); });
     
     // calculate area and mass center
     InitializeArea();
@@ -59,14 +57,8 @@ Polygon::Polygon(float width, float height) : Shape(EType::polygon)
     m_edges.emplace_back(m_vertices[0] - m_vertices[m_vertices.size() - 1]);
 
     // calculate normals
-    for (const Vector& edge : m_edges)
-    {
-        m_normals.emplace_back(Vector(edge.y, -edge.x).Normalize());
-    }    
-    
-    //m_normals.reserve(4);
-    //std::transform(m_edges.begin(), m_edges.end(), m_normals.begin(), m_normals.begin(), [](const Vector& edge) {return Vector(edge.y, -edge.x).Normalize(); });
-
+    std::transform(m_edges.begin(), m_edges.end(), back_inserter(m_normals), 
+        [](const Vector& edge) {return Vector(edge.y, -edge.x).Normalize(); });
     
     // calculate area and AABB
     m_area = width * height;
