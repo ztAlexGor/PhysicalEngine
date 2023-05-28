@@ -25,7 +25,7 @@ public:
 
 	void DeleteAllBodies();
 
-	void AddForce(Vector force);
+	void AddForce(const Vector& force);
 
 	void SetForces(std::vector<Vector> forces);
 

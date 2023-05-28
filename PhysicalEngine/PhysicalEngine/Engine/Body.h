@@ -122,7 +122,7 @@ public:
 
 	void SetForces(std::vector<Vector>& forces);
 
-	void SetAdittionalData(std::string data);
+	void SetAdittionalData(const std::string& data);
 
 	// main functions
 	void ClearForces();

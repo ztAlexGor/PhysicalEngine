@@ -25,7 +25,7 @@ void World::DeleteAllBodies()
 	m_bodies.clear();
 }
 
-void World::AddForce(Vector force)
+void World::AddForce(const Vector& force)
 {
 	m_forces.emplace_back(force);
 }
@@ -181,7 +181,7 @@ void World::FixCollision(float time, size_t iterNum)
 
     //вирішуємо колізію шляхом надання імпульсу
     //повторюємо дію iterNum кількість разів
-    for (int j = 0; j < iterNum; ++j)
+    for (size_t j = 0; j < iterNum; ++j)
     {
         for (std::shared_ptr<CollisionPair>& collision : collisions)
         {

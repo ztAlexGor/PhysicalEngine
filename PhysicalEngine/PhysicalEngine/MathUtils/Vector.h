@@ -22,7 +22,7 @@ public:
 
 	Vector& Normalize();
 
-	Vector& operator=(Vector other);
+	Vector& operator=(const Vector& other);
 
 	bool operator==(const Vector& other);
 

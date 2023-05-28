@@ -42,7 +42,7 @@ Vector& Vector::Normalize()
 	return *this;
 }
 
-Vector& Vector::operator=(Vector other)
+Vector& Vector::operator=(const Vector& other)
 {
 	x = other.x;
 	y = other.y;
