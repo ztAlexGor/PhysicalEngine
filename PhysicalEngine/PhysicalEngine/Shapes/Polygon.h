@@ -41,6 +41,8 @@ protected:
 private:
 	void InitializeArea();
 
+	void InitEdgesAndNormals();
+
 	// void InitializeCentroid();
 };
 

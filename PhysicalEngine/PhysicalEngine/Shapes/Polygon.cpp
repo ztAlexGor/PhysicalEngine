@@ -9,17 +9,8 @@ Polygon::Polygon(std::vector<Vector> vertices) : Shape(EType::polygon), m_vertic
 {
     if (m_vertices.size() < 3)throw std::logic_error("List of polygon vertices is incorrect");
 
-    // calculate edges
-    for (int i = 0; i < m_vertices.size() - 1; ++i)
-    {
-        m_edges.emplace_back(m_vertices[i + 1] - m_vertices[i]);
-    }
-    m_edges.emplace_back(m_vertices[0] - m_vertices[m_vertices.size() - 1]);
+    InitEdgesAndNormals();
 
-    // calculate normals
-    std::transform(m_edges.begin(), m_edges.end(), back_inserter(m_normals),
-        [](const Vector& edge) {return Vector(edge.y, -edge.x).Normalize(); });
-    
     // calculate area and mass center
     InitializeArea();
     // InitializeCentroid();
@@ -49,16 +40,7 @@ Polygon::Polygon(float width, float height) : Shape(EType::polygon)
     m_vertices.push_back(Vector( halfW,  halfH));
     m_vertices.push_back(Vector(-halfW,  halfH));
 
-    // calculate edges
-    for (int i = 0; i < m_vertices.size() - 1; ++i)
-    {
-        m_edges.emplace_back(m_vertices[i + 1] - m_vertices[i]);
-    }
-    m_edges.emplace_back(m_vertices[0] - m_vertices[m_vertices.size() - 1]);
-
-    // calculate normals
-    std::transform(m_edges.begin(), m_edges.end(), back_inserter(m_normals), 
-        [](const Vector& edge) {return Vector(edge.y, -edge.x).Normalize(); });
+    InitEdgesAndNormals();
     
     // calculate area and AABB
     m_area = width * height;
@@ -211,4 +193,18 @@ void Polygon::InitializeArea()
         j = i;
     }
     m_area /= -2;
+}
+
+void Polygon::InitEdgesAndNormals()
+{
+    // calculate edges
+    for (int i = 0; i < m_vertices.size() - 1; ++i)
+    {
+        m_edges.emplace_back(m_vertices[i + 1] - m_vertices[i]);
+    }
+    m_edges.emplace_back(m_vertices[0] - m_vertices[m_vertices.size() - 1]);
+
+    // calculate normals
+    std::transform(m_edges.begin(), m_edges.end(), back_inserter(m_normals),
+        [](const Vector& edge) {return Vector(edge.y, -edge.x).Normalize(); });
 }

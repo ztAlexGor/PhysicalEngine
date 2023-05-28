@@ -12,10 +12,8 @@
 
 
 sf::Vector2f VecToVec2f(const Vector vec);
-void drawCircle(sf::RenderWindow& window, const Circle* c, sf::Vector2f pos);
-void drawCircle(sf::RenderWindow& window, const Circle* c, sf::Vector2f pos, bool);
-void drawPolygon(sf::RenderWindow& window, const Polygon* p, sf::Vector2f pos, float angle);
-void drawPolygon(sf::RenderWindow& window, const Polygon* p, sf::Vector2f pos, float angle, bool);
+void drawCircle(sf::RenderWindow& window, const Circle* c, sf::Vector2f pos, bool isCollision = false);
+void drawPolygon(sf::RenderWindow& window, const Polygon* p, sf::Vector2f pos, float angle, bool isCollision = false);
 void drawBody(sf::RenderWindow& window, const Body& body);
 void draw(sf::RenderWindow& window);
 void draw(sf::RenderWindow& window, const std::string& msg, sf::Vector2f pos);
@@ -122,39 +120,6 @@ void drawCircle(sf::RenderWindow& window, const Circle* c, sf::Vector2f pos, boo
     cs.setPosition(pos.x - radius, pos.y - radius);
     if (isCollision)cs.setFillColor(sf::Color::Red);
     window.draw(cs);
-}
-
-void drawCircle(sf::RenderWindow& window, const Circle* c, sf::Vector2f pos) {
-    float radius = c->GetRadius();
-    sf::CircleShape cs(radius);
-    cs.setPosition(pos.x - radius, pos.y - radius);
-    window.draw(cs);
-}
-
-void drawPolygon(sf::RenderWindow& window, const Polygon* p, sf::Vector2f pos, float angle) {
-    std::vector<Vector>vert = p->GetVertices();
-
-    sf::ConvexShape polygon;
-    polygon.setPointCount(vert.size());
-
-    for (int i = 0; i < vert.size(); ++i) {
-        polygon.setPoint(i, VecToVec2f(vert[i]));
-    }
-
-    polygon.setPosition(pos);
-    polygon.setRotation(angle);
-
-    sf::Vector2f centroidPos = VecToVec2f(p->GetCentroid());
-    centroidPos += pos;
-
-    const float radius = 4;
-    sf::CircleShape centroid(radius);
-    centroid.setOutlineColor(sf::Color(0, 0, 0));
-    centroid.setPosition(sf::Vector2f(centroidPos.x - radius, centroidPos.y - radius));
-    centroid.setFillColor(sf::Color::Red);
-
-    window.draw(polygon);
-    window.draw(centroid);
 }
 
 void drawPolygon(sf::RenderWindow& window, const Polygon* p, sf::Vector2f pos, float angle, bool isCollision) {
