@@ -5,9 +5,9 @@ World::World()
     bIsFrictionEnable = true;
 }
 
-void World::SetGravity(Vector gravity)
+void World::SetGravity(const Vector& gravity)
 {
-	m_gravity = std::move(gravity);
+	m_gravity = gravity;
 }
 
 void World::SetFrictionEnable(bool arg)
@@ -15,7 +15,7 @@ void World::SetFrictionEnable(bool arg)
     bIsFrictionEnable = arg;
 }
 
-void World::AddBody(Body body)
+void World::AddBody(Body& body)
 {
 	m_bodies.emplace_back(body);
 }
@@ -32,10 +32,11 @@ void World::AddForce(Vector force)
 
 void World::SetForces(std::vector<Vector> forces)
 {
-    for (Vector force : forces)
-    {
-        m_forces.emplace_back(force);
-    }
+    m_forces = forces;
+    //for (Vector& force : forces)
+    //{
+    //    m_forces.emplace_back(force);
+    //}
 }
 
 void World::ClearForces()
@@ -101,7 +102,7 @@ void World::Step(float time, size_t iterNum)
     }
 
     //позиційна корекція
-    for (std::shared_ptr<CollisionPair> collision : collisions)
+    for (std::shared_ptr<CollisionPair>& collision : collisions)
     {
         collision->PositionalCorrection();
     }
@@ -143,11 +144,11 @@ void World::Step(float time, size_t iterNum)
 
 void World::FindCollisions()
 {
-    for (int i = 0; i < m_bodies.size() - 1; ++i)
+    for (size_t i = 0; i < m_bodies.size() - 1; ++i)
     {
         Body& a = m_bodies[i];
 
-        for (int j = i + 1; j < m_bodies.size(); ++j)
+        for (size_t j = i + 1; j < m_bodies.size(); ++j)
         {
             Body& b = m_bodies[j];
 
@@ -170,7 +171,7 @@ void World::FindCollisions()
     //numOfColl += collisions.size();
 }
 
-void World::FixCollision(float time, int iterNum)
+void World::FixCollision(float time, size_t iterNum)
 {
     // обраховуємо коєфіцієнти тертя та відновлення
     for (std::shared_ptr<CollisionPair>& collision : collisions)

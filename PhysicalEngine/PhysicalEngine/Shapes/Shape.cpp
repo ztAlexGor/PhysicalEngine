@@ -1,6 +1,6 @@
 #include "Shape.h"
 
-Shape::Shape(EType type) : type(type) {}
+Shape::Shape(EType type) : type(type), matrix({}) {}
 
 AABB Shape::GetAABB() const
 {

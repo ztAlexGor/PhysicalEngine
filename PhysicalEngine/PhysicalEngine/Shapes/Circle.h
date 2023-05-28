@@ -1,9 +1,6 @@
 #pragma once
 #include "Shape.h"
 
-const float PI = 3.141593f;
-
-
 
 class Circle : public Shape
 {

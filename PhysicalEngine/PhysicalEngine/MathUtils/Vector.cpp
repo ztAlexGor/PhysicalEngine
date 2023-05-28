@@ -33,7 +33,7 @@ Vector& Vector::Normalize()
 {
 	float length = Length();
 
-	if (length != 0)
+	if (abs(length) > FLT_EPSILON)
 	{
 		x /= length;
 		y /= length;

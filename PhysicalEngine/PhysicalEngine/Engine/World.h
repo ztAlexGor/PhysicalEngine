@@ -17,11 +17,11 @@ class World
 public:
 	World();
 
-	void SetGravity(Vector gravity);
+	void SetGravity(const Vector& gravity);
 
 	void SetFrictionEnable(bool arg);
 
-	void AddBody(Body body);
+	void AddBody(Body& body);
 
 	void DeleteAllBodies();
 
@@ -50,6 +50,6 @@ public:
 private:
 	void FindCollisions();
 
-	void FixCollision(float time, int iterNum);
+	void FixCollision(float time, size_t iterNum);
 };
 

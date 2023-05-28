@@ -95,17 +95,17 @@ Shape::EType Body::GetShapeType() const
 	return m_shape->GetType();
 }
 
-void Body::SetMaterial(Material material)
+void Body::SetMaterial(const Material& material)
 {
 	m_material = material;
 }
 
-void Body::SetPosition(Vector position)
+void Body::SetPosition(const Vector& position)
 {
 	m_position = position;
 }
 
-void Body::SetVelocity(Vector velocity)
+void Body::SetVelocity(const Vector& velocity)
 {
 	m_velocity = velocity;
 }
@@ -153,7 +153,7 @@ void Body::SetForces(std::vector<Vector>& forces)
 
 void Body::SetAdittionalData(std::string data)
 {
-	m_adittionalData = data;
+	m_adittionalData = std::move(data);
 }
 
 
@@ -164,7 +164,7 @@ void Body::ClearForces()
 }
 
 
-void Body::AddForce(Vector force)
+void Body::AddForce(const Vector& force)
 {
 	if (bIsStatic)return;
 
@@ -189,7 +189,7 @@ void Body::CalculatePosition(float time)
 	SetAngleR(m_angle + m_angularVelocity * time);
 }
 
-void Body::ApplyImpulse(Vector impulse, Vector contactVector)
+void Body::ApplyImpulse(const Vector& impulse, const Vector& contactVector)
 {
 	if (bIsStatic)return;
 
@@ -203,7 +203,7 @@ void Body::ApplyImpulse(Vector impulse, Vector contactVector)
 	if (abs(m_angularVelocity) < epsilon)m_angularVelocity = 0.f; // FIX!!! Added because of thinking objects
 }
 
-void Body::ApplyImpulse(Vector impulse)
+void Body::ApplyImpulse(const Vector& impulse)
 {
 	if (bIsStatic)return;
 

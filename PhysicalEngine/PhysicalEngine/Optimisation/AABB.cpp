@@ -1,7 +1,7 @@
 #include "AABB.h"
 
 
-AABB& AABB::operator=(const AABB other)
+AABB& AABB::operator=(const AABB& other)
 {
 	min = other.min;
 	max = other.max;

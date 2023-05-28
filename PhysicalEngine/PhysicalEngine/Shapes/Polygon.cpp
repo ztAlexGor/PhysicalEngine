@@ -1,6 +1,7 @@
 #include "Polygon.h"
 #include <stdexcept>
 #include <numbers>
+#include <algorithm>
 
 
 Polygon::Polygon(std::vector<Vector> vertices) : Shape(EType::polygon), m_vertices(std::move(vertices))/*, centroid(Vector(0.f, 0.f))*/
@@ -61,8 +62,12 @@ Polygon::Polygon(float width, float height) : Shape(EType::polygon)
     for (const Vector& edge : m_edges)
     {
         m_normals.emplace_back(Vector(edge.y, -edge.x).Normalize());
-    }
+    }    
+    
+    //m_normals.reserve(4);
+    //std::transform(m_edges.begin(), m_edges.end(), m_normals.begin(), m_normals.begin(), [](const Vector& edge) {return Vector(edge.y, -edge.x).Normalize(); });
 
+    
     // calculate area and AABB
     m_area = width * height;
 
@@ -206,8 +211,8 @@ void Polygon::InitializeArea()
     m_area = 0.0f;
 
     // Calculate value of shoelace formula
-    int j = m_vertices.size() - 1;
-    for (int i = 0; i < m_vertices.size(); ++i)
+    size_t j = m_vertices.size() - 1;
+    for (size_t i = 0; i < m_vertices.size(); ++i)
     {
         m_area += (m_vertices[j].x + m_vertices[i].x) * (m_vertices[j].y - m_vertices[i].y);
 

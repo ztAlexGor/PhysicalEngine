@@ -1,4 +1,5 @@
 #include "Circle.h"
+#include <numbers>
 
 Circle::Circle(float radius) : Shape(EType::circle), m_radius(radius)
 {
@@ -26,7 +27,7 @@ void Circle::InitAABB()
 
 MassInfo Circle::ComputeMass(float density) const
 {
-	float mass = PI * m_radius * m_radius * density;
+	float mass = std::numbers::pi * m_radius * m_radius * density;
 	float inertia = mass * m_radius * m_radius / 2.f;
 
 	MassInfo massInfo{ .mass{mass}, .invMass{1.f / mass}, .inertia{inertia}, .invInertia{1.f / inertia} };

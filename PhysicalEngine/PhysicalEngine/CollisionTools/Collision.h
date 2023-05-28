@@ -40,6 +40,6 @@ private:
 
 	static void FindIncidentFace(Vector* v, const Polygon* RefPoly, const Polygon* IncPoly, const Body* Ab, const Body* Bb, Vector referenceNormal);
 
-	static int Clip(Vector n, float c, Vector* face);
+	static int Clip(const Vector& n, float c, Vector* face);
 };
 

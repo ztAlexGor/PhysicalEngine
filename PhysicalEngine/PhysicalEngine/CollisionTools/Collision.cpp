@@ -47,7 +47,7 @@ CollisionManifold Collision::CircleWithCircle(const Body& bodyA, const Body& bod
     if (dist >= sumOfRadii * sumOfRadii) {//перетину немає
         manifold.crossPointsNumber = 0;
     }
-    else if (dist == 0) {//випадок коли центри кіл співпадають
+    else if (abs(dist) < FLT_EPSILON) {//випадок коли центри кіл співпадають
         manifold.normal = Vector(1, 0);
         manifold.depth = c1->GetRadius();
         manifold.crossPointsNumber = 1;
@@ -85,8 +85,8 @@ CollisionManifold Collision::CircleWithPolygon(const Body& bodyA, const Body& bo
     //знаходимо "лицьове" ребро
     //принцип схожий на використання опорних точок
     float separation = -INFINITY;
-    int faceNormal = 0;
-    for (int i = 0; i < normals.size(); ++i)
+    size_t faceNormal = 0;
+    for (size_t i = 0; i < normals.size(); ++i)
     {
         float s = Vector::DotProduct(normals[i], center - vertecies[i]);
 
@@ -104,7 +104,7 @@ CollisionManifold Collision::CircleWithPolygon(const Body& bodyA, const Body& bo
 
     //знаходимо дві вершини інцидентні "лицьовому" ребру
     Vector v1 = vertecies[faceNormal];
-    int i2 = faceNormal + 1 < vertecies.size() ? faceNormal + 1 : 0;
+    size_t i2 = faceNormal + 1 < vertecies.size() ? faceNormal + 1 : 0;
     Vector v2 = vertecies[i2];
 
     //перевіряємо чи знаходиться центр всередині прямокутника
@@ -191,7 +191,7 @@ CollisionManifold Collision::PolygonWithPolygon(const Body& bodyA, const Body& b
 
     //перевіряємо наявність розділової осі на основі нормалей r1
     //шукаємо "лицьове" ребро та глибину проникнення для r1
-    int faceA;
+    int faceA = 0;
     float penetrationA = FindAxisLeastPenetration(&faceA, r1, r2, &bodyA, &bodyB);
 
     if (penetrationA >= 0.0f)
@@ -199,14 +199,14 @@ CollisionManifold Collision::PolygonWithPolygon(const Body& bodyA, const Body& b
 
     //перевіряємо наявність розділової осі на основі нормалей r2
     //шукаємо "лицьове" ребро та глибину проникнення для r2
-    int faceB;
+    int faceB = 0;
     float penetrationB = FindAxisLeastPenetration(&faceB, r2, r1, &bodyB, &bodyA);
 
     if (penetrationB >= 0.0f)
         return manifold;
 
 
-    int referenceIndex;
+    size_t referenceIndex;
     bool flip; //змінна вказує чи напрямок від r1 до r2
 
     const Polygon* RefPoly; //референтний многокутник
@@ -354,9 +354,9 @@ void Collision::FindIncidentFace(Vector* v, const Polygon* RefPoly, const Polygo
     referenceNormal = IncPoly->GetMatrix().Transpose() * referenceNormal; //до СК incident
 
     //шукаємо найвіддаленіше у протилежному до нормалі напрямку ребро многокутника incident
-    int incidentFace = 0;
+    size_t incidentFace = 0;
     float minDot = INFINITY;
-    for (int i = 0; i < vert.size(); ++i)
+    for (size_t i = 0; i < vert.size(); ++i)
     {
         float dot = Vector::DotProduct(referenceNormal, norm[i]);
 
@@ -373,7 +373,7 @@ void Collision::FindIncidentFace(Vector* v, const Polygon* RefPoly, const Polygo
     v[1] = IncPoly->GetMatrix() * Vector(vert[incidentFace]) + Vector(Bb->GetPosition());
 }
 
-int Collision::Clip(Vector n, float c, Vector* face) {
+int Collision::Clip(const Vector& n, float c, Vector* face) {
     int sp = 0;
     Vector out[2] = {
         face[0],
@@ -389,6 +389,8 @@ int Collision::Clip(Vector n, float c, Vector* face) {
     if (d1 <= 0.0f) out[sp++] = face[0];
     if (d2 <= 0.0f) out[sp++] = face[1];
 
+    if (sp == 3)throw "Wrong points count";
+
     //якщо точки по різні стороні від ребра
     if (d1 * d2 < 0.0f) {
         //додаємо точку перетину із ребром
@@ -400,8 +402,6 @@ int Collision::Clip(Vector n, float c, Vector* face) {
     //зберігаємо знайдені значення
     face[0] = out[0];
     face[1] = out[1];
-
-    if (sp == 3)throw "Wrong points count";
 
     return sp;
 }

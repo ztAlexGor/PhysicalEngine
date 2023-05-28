@@ -4,6 +4,12 @@
 #include "Shapes/Polygon.h"
 #include <SFML/Graphics.hpp>
 #include "Engine/World.h"
+#include "RedBall.h"
+
+
+
+
+
 
 sf::Vector2f VecToVec2f(const Vector vec);
 void drawCircle(sf::RenderWindow& window, const Circle* c, sf::Vector2f pos);
@@ -12,7 +18,7 @@ void drawPolygon(sf::RenderWindow& window, const Polygon* p, sf::Vector2f pos, f
 void drawPolygon(sf::RenderWindow& window, const Polygon* p, sf::Vector2f pos, float angle, bool);
 void drawBody(sf::RenderWindow& window, const Body& body);
 void draw(sf::RenderWindow& window);
-void draw(sf::RenderWindow& window, std::string msg, sf::Vector2f pos);
+void draw(sf::RenderWindow& window, const std::string& msg, sf::Vector2f pos);
 void DrawWindow(sf::RenderWindow& window, World& world, float time);
 
 void SetTestScene(World& world);
@@ -21,66 +27,93 @@ void SetScene1(World& world);
 
 int main()
 {
-    srand(time(NULL));
-    sf::RenderWindow window(sf::VideoMode(1500, 1000), L"Physics", sf::Style::Default);
-    World world;
-
-    const float timeStep = 1.f / 300.f;
-    const float frameSimeStep = timeStep / 1'000'000;
-    sf::Clock clock;
-
-    //SetTestScene(world);
-    SetScene1(world);
-
-    int lastFrame = clock.getElapsedTime().asMicroseconds();
-    while (window.isOpen())
-    {
-        int start = clock.getElapsedTime().asMicroseconds();
-
-
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed) window.close();
-            else if (event.type == sf::Event::MouseWheelScrolled) {
-                for (Body& b : world.GetBodies()) {
-                    if (b.GetAdittionalData() == "key" || b.GetAdittionalData() == "keyCollision")
-                    {
-                        int delta = event.mouseWheelScroll.delta;
-                        b.SetAngleD(b.GetAngleD() + delta * 5);
-                        break;
-                    }
-                }
-            }
-        }
-
-
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-            for (Body& b : world.GetBodies()) {
-                if (b.GetAdittionalData() == "key" || b.GetAdittionalData() == "keyCollision")
-                {
-                    const sf::Vector2i mousePosition{ sf::Mouse::getPosition(window) };
-                    const sf::Vector2f mouseCoord{ window.mapPixelToCoords(mousePosition) };
-                    Vector direction(mouseCoord.x - b.GetPosition().x, mouseCoord.y - b.GetPosition().y);
-                    Vector vel = b.GetVelocity() / 2;
-                    if (Vector::DotProduct(vel, direction) < 0)b.SetVelocity(vel * 0.98);
-                    //b.ApplyImpulse(direction * 500, timeStep);
-                    b.SetPosition(Vector(mouseCoord.x, mouseCoord.y));
-                    break;
-                }
-            }
-        }
-        world.Step(timeStep, 5);
-        if (clock.getElapsedTime().asMicroseconds() - lastFrame > frameSimeStep)
-        {
-            //world.Step(timeStep, 5);
-            lastFrame = clock.getElapsedTime().asMicroseconds();
-        }
-
-        DrawWindow(window, world, clock.getElapsedTime().asMicroseconds() - start);
-    }
+    start();
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //srand(time(NULL));
+    //sf::RenderWindow window(sf::VideoMode(1500, 1000), L"Physics", sf::Style::Default);
+    //World world;
+
+    //const float FPS = 80.f;
+    //const float InvFPS = 1.f / FPS;
+    //sf::Clock clock;
+
+    ////SetTestScene(world);
+    //SetScene1(world);
+
+
+    ////window.setFramerateLimit(0.6);
+    ////int a = 0;
+    ////int lastFrame = clock.getElapsedTime().asMicroseconds();
+    //while (window.isOpen())
+    //{
+    //    //int start = clock.getElapsedTime().asMicroseconds();
+
+
+    //    sf::Event event;
+    //    while (window.pollEvent(event))
+    //    {
+    //        if (event.type == sf::Event::Closed) window.close();
+    //        //else if (event.type == sf::Event::MouseWheelScrolled) {
+    //        //    for (Body& b : world.GetBodies()) {
+    //        //        if (b.GetAdittionalData() == "key" || b.GetAdittionalData() == "keyCollision")
+    //        //        {
+    //        //            int delta = event.mouseWheelScroll.delta;
+    //        //            b.SetAngleD(b.GetAngleD() + delta * 5);
+    //        //            break;
+    //        //        }
+    //        //    }
+    //        //}
+    //    }
+
+    //    float dt = clock.getElapsedTime().asSeconds();
+
+    //    unsigned int nr = std::floor(dt * FPS + 0.5f);
+    //    for (int i = 0; i < nr; ++i)
+    //    {
+    //        world.Step(InvFPS, 5);
+    //        DrawWindow(window, world, dt * 1000/*clock.getElapsedTime().asMicroseconds()*/);
+
+    //        clock.restart();
+    //        //a++;
+    //        //if (a > 660) {
+    //        //    int t = clock.getElapsedTime().asMicroseconds() - lastFrame;
+    //        //    int fps = a * 1000000 / t;
+    //        //    int c = 9;
+    //        //}
+    //        if (nr > 1) {
+    //            int c = 9;
+    //        }
+    //    }
+
+
+    //}
+
+
+
+
+
+
+
+
+
+
+
 
 
 void drawCircle(sf::RenderWindow& window, const Circle* c, sf::Vector2f pos, bool isCollision) {
@@ -173,7 +206,7 @@ void draw(sf::RenderWindow& window/*, Body& b*/)
 
     
     Body circleBody{ BodyInit {.position = Vector(1000.f, 700.f)} };
-    circleBody.SetShape(new Circle(10.f), MaterialInfo(), 1.f);
+    circleBody.SetShape(new Circle(10.f), Material(), 1.f);
     drawBody(window, circleBody);
 
 
@@ -183,7 +216,7 @@ void draw(sf::RenderWindow& window/*, Body& b*/)
 
 }
 
-void draw(sf::RenderWindow& window, std::string msg, sf::Vector2f pos)
+void draw(sf::RenderWindow& window, const std::string& msg, sf::Vector2f pos)
 {
     sf::Font myFont;
 
@@ -210,7 +243,11 @@ void DrawWindow(sf::RenderWindow& window, World& world, float time)
         drawBody(window, b);
     }
 
-    draw(window, std::to_string(1'000'000 / time), sf::Vector2f(1400, 20));
+    draw(window, std::to_string(1'000'000 / time), sf::Vector2f(1350, 20));
+
+
+    draw(window, std::to_string(time), sf::Vector2f(1350, 60));
+
     window.display();
 }
 
@@ -237,7 +274,7 @@ void SetTestScene(World& world)
 
         Body b{ BodyInit{.position = Vector(750, 500)} };
         //b.SetShape(new Polygon(std::vector<Vector>{ Vector(400, 0), Vector(500, 50), Vector(400, 200), Vector(300, 0) }), MaterialInfo(), 1.f);
-        b.SetShape(new Circle(100), MaterialInfo(), 1.f);
+        b.SetShape(new Circle(100), Material(), 1.f);
         //b.SetStatic(true);
         world.AddBody(b);
 
@@ -245,12 +282,28 @@ void SetTestScene(World& world)
 
     Body b{ BodyInit{.position = Vector(840, 420.f), .adittionalData = "key"} };
     //b.SetShape(new Polygon(std::vector<Vector>{ Vector(50, 30), Vector(-50, 30), Vector(-50, -30), Vector(50, -30) }), MaterialInfo(), 1.f);
-    b.SetShape(new Polygon(std::vector<Vector>{ Vector(400, 0), Vector(500, 50), Vector(400, 200), Vector(300, 0) }), MaterialInfo(), 1.f);
+    b.SetShape(new Polygon(std::vector<Vector>{ Vector(400, 0), Vector(500, 50), Vector(400, 200), Vector(300, 0) }), Material(), 1.f);
     //b.SetShape(new Polygon(std::vector<Vector>{ Vector(60, 0), Vector(100, 10), Vector(80, 40), Vector(40, 0) }), MaterialInfo(), 1.f);
     //b.SetShape(new Circle(50.3332f), MaterialInfo(), 1.f);
     //b.SetGravityScale(0);
     //b.SetStatic(true);
     world.AddBody(b);
+
+    //if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+    //    for (Body& b : world.GetBodies()) {
+    //        if (b.GetAdittionalData() == "key" || b.GetAdittionalData() == "keyCollision")
+    //        {
+    //            const sf::Vector2i mousePosition{ sf::Mouse::getPosition(window) };
+    //            const sf::Vector2f mouseCoord{ window.mapPixelToCoords(mousePosition) };
+    //            Vector direction(mouseCoord.x - b.GetPosition().x, mouseCoord.y - b.GetPosition().y);
+    //            Vector vel = b.GetVelocity() / 2;
+    //            if (Vector::DotProduct(vel, direction) < 0)b.SetVelocity(vel * 0.98);
+    //            //b.ApplyImpulse(direction * 500, timeStep);
+    //            b.SetPosition(Vector(mouseCoord.x, mouseCoord.y));
+    //            break;
+    //        }
+    //    }
+    //}
 }
 
 void SetScene1(World& world)
@@ -258,8 +311,8 @@ void SetScene1(World& world)
     world.SetGravity(Vector(0.f, 10.f));
     //world.SetFrictionEnable(true);
 
-    MaterialInfo wood{ .restitution = 0.2, .staticFriction = 0.5, .dynamicFriction = 0.1 };
-    MaterialInfo plastic{ .restitution = 0.3, .staticFriction = 0.4, .dynamicFriction = 0.2 };
+    Material wood = Material::wood();
+    Material plastic = Material::plastic();
 
 
     Body box{ BodyInit {.position = Vector(380.f, 50.f), .angle = -45} }; // .position = Vector(380.f, 50.f)
@@ -267,11 +320,11 @@ void SetScene1(World& world)
 
     // box sliders
     Body slider1{ BodyInit {.position = Vector(350.f, 120.f), .angle = 30 } };
-    slider1.SetShape(new Polygon(150, 4), wood, 4);
+    slider1.SetShape(new Polygon(150, 10), wood, 4);
     slider1.SetStatic(true);
 
     Body slider2{ BodyInit {.position = Vector(450.f, 170.f), .angle = 30 } };
-    slider2.SetShape(new Polygon(100, 4), wood, 4);
+    slider2.SetShape(new Polygon(100, 10), wood, 4);
     slider2.SetStatic(true);
 
 
@@ -280,35 +333,36 @@ void SetScene1(World& world)
 
     // ball sliders
     Body ballSlider1{ BodyInit {.position = Vector(700.f, 355.f) } };
-    ballSlider1.SetShape(new Polygon(100, 4), wood, 4);
+    ballSlider1.SetShape(new Polygon(100, 10), wood, 4);
     ballSlider1.SetStatic(true);
 
     Body ballSlider2{ BodyInit {.position = Vector(880.f, 425.f), .angle = -35 } };
-    ballSlider2.SetShape(new Polygon(250, 4), wood, 4);
+    ballSlider2.SetShape(new Polygon(250, 10), wood, 4);
     ballSlider2.SetStatic(true);
 
     Body ballSlider3{ BodyInit {.position = Vector(700.f, 550.f), .angle = 35 } };
-    ballSlider3.SetShape(new Polygon(200, 4), wood, 4);
+    ballSlider3.SetShape(new Polygon(200, 10), wood, 4);
     ballSlider3.SetStatic(true);
 
     Body ballSlider4{ BodyInit {.position = Vector(880.f, 675.f), .angle = -35 } };
-    ballSlider4.SetShape(new Polygon(200, 4), wood, 4);
+    ballSlider4.SetShape(new Polygon(200, 10), wood, 4);
     ballSlider4.SetStatic(true);
 
 
     // add all bodies to the world
-    world.AddBody(box);
-    world.AddBody(slider1);
-    world.AddBody(slider2);
-
     world.AddBody(ball);
-    world.AddBody(ballSlider1);
-    world.AddBody(ballSlider2);
-    world.AddBody(ballSlider3);
-    world.AddBody(ballSlider4);
+    //world.AddBody(box);
+    //world.AddBody(slider1);
+    //world.AddBody(slider2);
+    //world.AddBody(ballSlider1);
+    //world.AddBody(ballSlider2);
+    //world.AddBody(ballSlider3);
+    //world.AddBody(ballSlider4);
 }
 
 
 sf::Vector2f VecToVec2f(const Vector vec) {
     return sf::Vector2f(vec.x, vec.y);
 }
+
+

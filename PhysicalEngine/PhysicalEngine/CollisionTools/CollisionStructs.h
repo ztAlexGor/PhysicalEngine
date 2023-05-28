@@ -20,13 +20,13 @@ class CollisionPair
 	
 public:
 
-	CollisionPair(Body& a, Body& b, CollisionManifold manifold);
+	CollisionPair(Body& a, Body& b, const CollisionManifold& manifold);
 
 	Body& GetBodyA();
 
 	Body& GetBodyB();
 
-	void InitProperties(float time, Vector gravity);
+	void InitProperties(float time, const Vector& gravity);
 
 	void FixCollision(bool isFrictionEnable);
 

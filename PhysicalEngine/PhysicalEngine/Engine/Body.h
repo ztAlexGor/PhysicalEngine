@@ -10,7 +10,7 @@ struct Material
 	float dynamicFriction;
 
 	static constexpr Material wood() { return Material(0.2f, 0.5f, 0.1f); }
-	static constexpr Material stone() { return Material(0.1, 0.5f, 0.2f); }
+	static constexpr Material stone() { return Material(0.1f, 0.5f, 0.2f); }
 	static constexpr Material elastic() { return Material(1.f, 0.f, 0.f); }
 	static constexpr Material plastic() { return Material(0.3f, 0.4f, 0.2f); }
 
@@ -100,13 +100,13 @@ public:
 	Shape::EType GetShapeType() const;
 
 	// setters
-	void SetShape(Shape* shape, const Material material, const float density);
+	void SetShape(Shape* shape, const Material& material, float density);
 
-	void SetMaterial(Material material);
+	void SetMaterial(const Material& material);
 
-	void SetPosition(Vector position);
+	void SetPosition(const Vector& position);
 
-	void SetVelocity(Vector velocity);
+	void SetVelocity(const Vector& velocity);
 
 	void SetAngleR(float angle);
 
@@ -127,15 +127,15 @@ public:
 	// main functions
 	void ClearForces();
 
-	void AddForce(Vector force);
+	void AddForce(const Vector& force);
 
 	void ApplyForces(float time, const Vector& gravity);
 
 	void CalculatePosition(float time);
 
-	void ApplyImpulse(Vector impulse, Vector contactVector);
+	void ApplyImpulse(const Vector& impulse, const Vector& contactVector);
 
-	void ApplyImpulse(Vector impulse);
+	void ApplyImpulse(const Vector& impulse);
 
 	bool IsPointInShape(const Vector& point)const;
 };

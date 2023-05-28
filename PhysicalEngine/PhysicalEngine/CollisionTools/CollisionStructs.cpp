@@ -1,7 +1,7 @@
 #include "CollisionStructs.h"
 
 
-CollisionPair::CollisionPair(Body& a, Body& b, CollisionManifold manifold) :
+CollisionPair::CollisionPair(Body& a, Body& b, const CollisionManifold& manifold) :
 	bodyA(a), bodyB(b), manifold(manifold)
 {
 	props.restitution = 0.f;
@@ -20,7 +20,7 @@ Body& CollisionPair::GetBodyB()
 }
 
 
-void CollisionPair::InitProperties(float time, Vector gravity)
+void CollisionPair::InitProperties(float time, const Vector& gravity)
 {
     props.restitution = std::min(bodyA.GetMaterial().restitution, bodyB.GetMaterial().restitution);
 
