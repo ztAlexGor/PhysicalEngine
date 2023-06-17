@@ -11,15 +11,15 @@ class CollisionPair
 		float sf;
 	};
 
-	static bool bIsFrictionEnable;
-
 	Body& bodyA;
 	Body& bodyB;
 	CollisionManifold manifold;
 	Properties props;
 	
 public:
+	static bool bIsFrictionEnable;
 
+public:
 	CollisionPair(Body& a, Body& b, const CollisionManifold& manifold);
 
 	Body& GetBodyA();
@@ -28,7 +28,7 @@ public:
 
 	void InitProperties(float time, const Vector& gravity);
 
-	void FixCollision(bool isFrictionEnable);
+	void FixCollision();
 
 	void PositionalCorrection();
 };

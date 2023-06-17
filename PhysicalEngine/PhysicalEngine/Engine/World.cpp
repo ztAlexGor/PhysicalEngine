@@ -13,6 +13,7 @@ void World::SetGravity(const Vector& gravity)
 void World::SetFrictionEnable(bool arg)
 {
     bIsFrictionEnable = arg;
+    CollisionPair::bIsFrictionEnable = arg;
 }
 
 void World::AddBody(Body& body)
@@ -155,6 +156,9 @@ void World::FindCollisions()
             // статичні тіла не взаємодіють один із одним
             if (a.IsStatic() && b.IsStatic())continue;
 
+            // широка фаза перевірки
+            if (!Collision::BroadPhase(a, b))continue;
+
             // перевіряємо на наявність колізії для пари (a, b) та зберігаємо
             // інформацію про це до об'єкту CollisionManifold
             CollisionManifold manifold = Collision::CheckCollision(a, b);
@@ -185,7 +189,7 @@ void World::FixCollision(float time, size_t iterNum)
     {
         for (std::shared_ptr<CollisionPair>& collision : collisions)
         {
-            collision->FixCollision(bIsFrictionEnable);
+            collision->FixCollision();
         }
     }
 }

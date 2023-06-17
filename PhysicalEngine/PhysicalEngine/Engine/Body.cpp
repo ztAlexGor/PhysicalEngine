@@ -197,10 +197,10 @@ void Body::ApplyImpulse(const Vector& impulse, const Vector& contactVector)
 	m_angularVelocity += m_massInfo.invInertia * Vector::CrossProduct(contactVector, impulse);
 
 
-	const float epsilon = 0.001f;// FIX!!! Added because of thinking objects
-	if (abs(m_velocity.x) < epsilon)m_velocity.x = 0.f; // FIX!!! Added because of thinking objects
-	if (abs(m_velocity.y) < epsilon)m_velocity.y = 0.f; // FIX!!! Added because of thinking objects
-	if (abs(m_angularVelocity) < epsilon)m_angularVelocity = 0.f; // FIX!!! Added because of thinking objects
+	//const float epsilon = 0.001f;// FIX!!! Added because of thinking objects
+	//if (abs(m_velocity.x) < epsilon)m_velocity.x = 0.f; // FIX!!! Added because of thinking objects
+	//if (abs(m_velocity.y) < epsilon)m_velocity.y = 0.f; // FIX!!! Added because of thinking objects
+	//if (abs(m_angularVelocity) < 0.005f)m_angularVelocity = 0.f; // FIX!!! Added because of thinking objects
 }
 
 void Body::ApplyImpulse(const Vector& impulse)

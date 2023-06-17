@@ -27,6 +27,8 @@ class Collision
 public:
 	static CollisionManifold CheckCollision(const Body& bodyA, const Body& bodyB);
 
+	static bool BroadPhase(const Body& bodyA, const Body& bodyB);
+
 private:
 	static CollisionManifold CircleWithCircle(const Body& bodyA, const Body& bodyB);
 

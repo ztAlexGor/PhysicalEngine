@@ -101,6 +101,7 @@ Shape* Polygon::Clone() const
 void Polygon::Rotate(float angle)
 {
     matrix.Set(angle);
+    ComputeAABB();
 }
 
 
@@ -167,7 +168,7 @@ Vector Polygon::GetCentroid() const
 
 void Polygon::InitAABB()
 {
-    Vector min(INFINITY, INFINITY);
+    Vector min( INFINITY,  INFINITY);
     Vector max(-INFINITY, -INFINITY);
 
     for (const Vector& dot : m_vertices) {
@@ -207,4 +208,20 @@ void Polygon::InitEdgesAndNormals()
     // calculate normals
     std::transform(m_edges.begin(), m_edges.end(), back_inserter(m_normals),
         [](const Vector& edge) {return Vector(edge.y, -edge.x).Normalize(); });
+}
+
+void Polygon::ComputeAABB()
+{
+    Vector min( INFINITY,  INFINITY);
+    Vector max(-INFINITY, -INFINITY);
+
+    for (const Vector& vertex : m_vertices) {
+        Vector dot = matrix * vertex;
+
+        if (min.x > dot.x)min.x = dot.x;
+        if (min.y > dot.y)min.y = dot.y;
+        if (max.x < dot.x)max.x = dot.x;
+        if (max.y < dot.y)max.y = dot.y;
+    }
+    aabb = AABB(min, max);
 }

@@ -25,5 +25,7 @@ public:
 
 protected:
 	virtual void InitAABB() override;
+
+	void ComputeAABB();
 };
 

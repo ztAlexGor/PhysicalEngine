@@ -1,5 +1,6 @@
 #include "CollisionStructs.h"
 
+bool CollisionPair::bIsFrictionEnable = true;
 
 CollisionPair::CollisionPair(Body& a, Body& b, const CollisionManifold& manifold) :
 	bodyA(a), bodyB(b), manifold(manifold)
@@ -47,7 +48,7 @@ void CollisionPair::InitProperties(float time, const Vector& gravity)
 
 
 
-void CollisionPair::FixCollision(bool isFrictionEnable)
+void CollisionPair::FixCollision()
 {
     //якщо обидва тіла статичні, то взаємодія не відбувається
     if (bodyA.IsStatic() && bodyB.IsStatic()) {
@@ -56,14 +57,20 @@ void CollisionPair::FixCollision(bool isFrictionEnable)
         return;
     }
 
+    const Vector velA = bodyA.GetVelocity();
+    const Vector velB = bodyB.GetVelocity();
+
+    const float angVelA = bodyA.GetAngularVelocity();
+    const float angVelB = bodyB.GetAngularVelocity();
+
     //для кожної точки перетину
     for (int i = 0; i < manifold.crossPointsNumber; ++i) {
         Vector ra = manifold.crossPoint[i] - bodyA.GetPosition();
         Vector rb = manifold.crossPoint[i] - bodyB.GetPosition();
 
         //шукаємо швидкість B відносно А
-        Vector rv = bodyB.GetVelocity() + Vector::CrossProduct(bodyB.GetAngularVelocity(), rb) -
-                    bodyA.GetVelocity() - Vector::CrossProduct(bodyA.GetAngularVelocity(), ra);
+        Vector rv = velB + Vector::CrossProduct(angVelB, rb) -
+                    velA - Vector::CrossProduct(angVelA, ra);
 
 
         //швидкість B відносно А вздовж нормалі зіткнення
@@ -96,9 +103,9 @@ void CollisionPair::FixCollision(bool isFrictionEnable)
         bodyB.ApplyImpulse( impulse, rb);
 
         //враховуємо силу тертя
-        if (isFrictionEnable) {
-            rv = bodyB.GetVelocity() + Vector::CrossProduct(bodyB.GetAngularVelocity(), rb) -
-                 bodyA.GetVelocity() - Vector::CrossProduct(bodyA.GetAngularVelocity(), ra);
+        if (CollisionPair::bIsFrictionEnable) {
+            rv = velB + Vector::CrossProduct(angVelB, rb) -
+                 velA - Vector::CrossProduct(angVelA, ra);
 
             //напрямок тангенціального імпульсу
             Vector t = rv - (manifold.normal * Vector::DotProduct(rv, manifold.normal));

@@ -27,6 +27,14 @@ CollisionManifold Collision::CheckCollision(const Body& bodyA, const Body& bodyB
     return JumpTable[static_cast<int>(bodyA.GetShapeType())][static_cast<int>(bodyB.GetShapeType())](bodyA, bodyB);
 }
 
+bool Collision::BroadPhase(const Body& bodyA, const Body& bodyB)
+{
+    AABB aabb_A = bodyA.GetShape()->GetAABB() + bodyA.GetPosition();
+    AABB aabb_B = bodyB.GetShape()->GetAABB() + bodyB.GetPosition();
+
+    return AABB::IsIntersect(aabb_A, aabb_B);
+}
+
 
 CollisionManifold Collision::CircleWithCircle(const Body& bodyA, const Body& bodyB)
 {

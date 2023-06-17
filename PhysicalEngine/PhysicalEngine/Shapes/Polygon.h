@@ -43,6 +43,7 @@ private:
 
 	void InitEdgesAndNormals();
 
+	void ComputeAABB();
 	// void InitializeCentroid();
 };
 

@@ -14,6 +14,10 @@ struct AABB
 
 	AABB& operator=(const AABB& other);
 
-	//bool IsIntersect(const AABB other);
+	AABB operator+(const Vector& vector) const;
+
+	AABB& operator+=(const Vector& vec);
+
+	static bool IsIntersect(const AABB& box1, const AABB& box2);
 };
 

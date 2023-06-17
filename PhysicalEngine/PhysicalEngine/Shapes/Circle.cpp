@@ -16,12 +16,19 @@ float Circle::GetRadius() const
 void Circle::SetRadius(float radius)
 {
 	m_radius = radius;
+	ComputeAABB();
 }
 
 
 void Circle::InitAABB()
 {
 	aabb = AABB(Vector(-m_radius, -m_radius), Vector(m_radius, m_radius));
+}
+
+void Circle::ComputeAABB()
+{
+	aabb.min.Set(-m_radius, -m_radius);
+	aabb.max.Set( m_radius,  m_radius);
 }
 
 
