@@ -14,6 +14,9 @@ class World
 
 	std::vector<std::shared_ptr<CollisionPair>> collisions;
 
+	static const int minIterNum = 1;
+	static const int maxIterNum = 64;
+
 public:
 	World();
 

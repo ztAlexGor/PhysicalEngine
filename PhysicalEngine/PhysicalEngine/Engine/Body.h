@@ -66,6 +66,8 @@ class Body
 	std::string m_adittionalData;
 
 	Vector m_resultForce;
+	bool m_bIsAwake;
+	static float awakeEpsilon;
 
 public:
 	Body(const BodyInit& init);

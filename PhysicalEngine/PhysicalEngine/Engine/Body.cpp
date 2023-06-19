@@ -1,6 +1,7 @@
 #include "Body.h"
 #include <numbers>
 
+float Body::awakeEpsilon = 0.001f;
 
 Body::Body(const BodyInit& init):
 	m_shape(nullptr),
@@ -13,7 +14,8 @@ Body::Body(const BodyInit& init):
 	m_gravityScale(init.gravityScale),
 	m_adittionalData(init.adittionalData),
 	m_forces(init.forces),
-	m_massInfo({})
+	m_massInfo({}),
+	m_bIsAwake(true)
 {
 }
 
@@ -176,6 +178,7 @@ void Body::AddForce(const Vector& force)
 void Body::ApplyForces(float time, const Vector& gravity)
 {
 	if (bIsStatic)return;
+	m_bIsAwake = true;
 
 	m_velocity += (m_resultForce * m_massInfo.invMass + gravity * m_gravityScale) * time;
 	m_angularVelocity += m_torque * m_massInfo.invInertia * time;
@@ -185,28 +188,34 @@ void Body::CalculatePosition(float time)
 {
 	if (bIsStatic)return;
 
-	m_position += m_velocity * time;
-	SetAngleR(m_angle + m_angularVelocity * time);
+	if (m_bIsAwake == true)
+	{
+		if (m_velocity.Length() < Body::awakeEpsilon)
+		{
+			m_velocity.SetZero();
+			m_bIsAwake = false;
+		}
+		else
+		{
+			m_position += m_velocity * time;
+			SetAngleR(m_angle + m_angularVelocity * time);
+		}
+	}
 }
 
 void Body::ApplyImpulse(const Vector& impulse, const Vector& contactVector)
 {
 	if (bIsStatic)return;
+	m_bIsAwake = true;
 
 	m_velocity += m_massInfo.invMass * impulse;
 	m_angularVelocity += m_massInfo.invInertia * Vector::CrossProduct(contactVector, impulse);
-
-
-	//const float epsilon = 0.001f;// FIX!!! Added because of thinking objects
-	//if (abs(m_velocity.x) < epsilon)m_velocity.x = 0.f; // FIX!!! Added because of thinking objects
-	//if (abs(m_velocity.y) < epsilon)m_velocity.y = 0.f; // FIX!!! Added because of thinking objects
-	//if (abs(m_angularVelocity) < 0.005f)m_angularVelocity = 0.f; // FIX!!! Added because of thinking objects
 }
 
 void Body::ApplyImpulse(const Vector& impulse)
 {
 	if (bIsStatic)return;
-
+	m_bIsAwake = true;
 	m_velocity += impulse * m_massInfo.invMass;
 }
 

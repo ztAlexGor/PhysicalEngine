@@ -117,7 +117,7 @@ void CollisionPair::FixCollision()
             jt /= (float)manifold.crossPointsNumber;
 
             //якщо величина імпульсу дуже мала, то просто ігноруємо її
-            if (abs(jt) < 0.0001f)return;
+            if (abs(jt) < 0.0001f)continue;
 
             //в залежності від типу тертя імпульс буде різним
             Vector tangentImpulse;
@@ -135,15 +135,42 @@ void CollisionPair::FixCollision()
 
 void CollisionPair::PositionalCorrection()
 {
-    const float k_slop = 0.02f; //допуст проникнення (0.01; 0.1)
-    const float percent = 0.5f; //відсоток проникнення, для корекції (0.2; 0.8)
+    //const float k_slop = 0.03f; //допуст проникнення (0.01; 0.1)
+    //const float percent = 0.3f; //відсоток проникнення, для корекції (0.2; 0.8)
 
-    float t = manifold.depth - k_slop;
-    if (t > 0.f) {
-        Vector correction = (t / (bodyA.GetMassInfo().invMass + bodyB.GetMassInfo().invMass)) * manifold.normal * percent;
+    //float t = manifold.depth - k_slop;
+    //if (t > 0) {
+        //Vector correction = (t / (bodyA.GetMassInfo().invMass + bodyB.GetMassInfo().invMass)) * manifold.normal * percent;
 
-        if (!bodyA.IsStatic())bodyA.SetPosition(Vector(bodyA.GetPosition()) - correction * bodyA.GetMassInfo().invMass);
-        if (!bodyB.IsStatic())bodyB.SetPosition(Vector(bodyB.GetPosition()) + correction * bodyB.GetMassInfo().invMass);
-    }
+        //if (!bodyA.IsStatic())bodyA.SetPosition(Vector(bodyA.GetPosition()) - correction * bodyA.GetMassInfo().invMass);
+        //if (!bodyB.IsStatic())bodyB.SetPosition(Vector(bodyB.GetPosition()) + correction * bodyB.GetMassInfo().invMass);
+
+        //if (!bodyA.IsStatic() && Vector::DotProduct(manifold.normal, bodyA.GetVelocity()) > 0) {
+        //    float penetrationMultiplier = 1 + t / bodyA.GetMassInfo().invMass;
+        //    Vector impulse = manifold.normal * penetrationMultiplier * percent;
+        //    bodyA.ApplyImpulse(-2 * impulse);
+        //}
+        //if (!bodyB.IsStatic() && Vector::DotProduct(manifold.normal, bodyB.GetVelocity()) < 0) {
+        //    float penetrationMultiplier = 1 + t / bodyB.GetMassInfo().invMass;
+        //    Vector impulse = manifold.normal * penetrationMultiplier * percent;
+        //    bodyB.ApplyImpulse(2*impulse);
+        //}
+
+        if (bodyA.IsStatic())
+        {
+            Vector correction = manifold.depth * manifold.normal;
+            bodyB.SetPosition(bodyB.GetPosition() + correction);
+        }
+        else if (bodyB.IsStatic())
+        {
+            Vector correction = manifold.depth * manifold.normal;
+            bodyA.SetPosition(bodyA.GetPosition() - correction);
+        }
+        else {
+            Vector correction = (manifold.depth / (bodyA.GetMassInfo().invMass + bodyB.GetMassInfo().invMass)) * manifold.normal;
+            bodyA.SetPosition(bodyA.GetPosition() - correction * bodyA.GetMassInfo().invMass);
+            bodyB.SetPosition(bodyB.GetPosition() + correction * bodyB.GetMassInfo().invMass);
+        }
+    //}
 }
 

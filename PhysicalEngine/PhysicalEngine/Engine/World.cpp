@@ -78,67 +78,70 @@ const std::vector<Vector>& World::GetForces() const
 
 void World::Step(float time, size_t iterNum)
 {
-    //застосовуємо усі додаткові сили (наприклад, силу тяжіння) за час = time / 2.f
-    for (Body& body : m_bodies)
-    {
-        body.ApplyForces(time / 2.f, m_gravity);
-    }
+    iterNum = iterNum < minIterNum ? minIterNum : iterNum;
+    iterNum = iterNum > maxIterNum ? maxIterNum : iterNum;
 
-    // find all collision pairs
-    FindCollisions();
+    time /= (float)iterNum;
 
-    // fix collisions
-    FixCollision(time, iterNum);
+    for (int iteration = 0; iteration < iterNum; ++iteration) {
+        //застосовуємо усі додаткові сили (наприклад, силу тяжіння) за час = time / 2.f
+        for (Body& body : m_bodies)
+        {
+            body.ApplyForces(time / 2.f, m_gravity);
+        }
 
-    //оновлюємо позицію тіла за певний проміжок часу
-    for (Body& body : m_bodies)
-    {
-        body.CalculatePosition(time);
-    }
+        // find all collision pairs
+        FindCollisions();
 
-    // вдруге застосовуємо усі сили за час = time / 2.f
-    for (Body& body : m_bodies)
-    {
-        body.ApplyForces(time / 2.f, m_gravity);
-    }
+        // fix collisions
+        FixCollision(time, iterNum);
 
-    //позиційна корекція
-    for (std::shared_ptr<CollisionPair>& collision : collisions)
-    {
-        collision->PositionalCorrection();
-    }
+        //позиційна корекція
+        for (std::shared_ptr<CollisionPair>& collision : collisions)
+        {
+            collision->PositionalCorrection();
+        }
 
+        //оновлюємо позицію тіла за певний проміжок часу
+        for (Body& body : m_bodies)
+        {
+            body.CalculatePosition(time);
+        }
 
+        // вдруге застосовуємо усі сили за час = time / 2.f
+        for (Body& body : m_bodies)
+        {
+            body.ApplyForces(time / 2.f, m_gravity);
+        }
 
-    /////////////////////////////////////////////step///////////////////////////////////////////////////////////
-    //for (Body& body : m_bodies)
-    //{
-    //    if (body.GetAdittionalData() == "key" || body.GetAdittionalData() == "keyCollision")
-    //        body.SetAdittionalData("key");
-    //    else if (body.GetAdittionalData() == "" || body.GetAdittionalData() == "Collision") {
-    //        body.SetAdittionalData("");
-    //    }
-    //    else {
-    //        int r = 0;
-    //    }
-    //}
-    //
-    //for (std::shared_ptr<CollisionPair>& collision : collisions)
-    //{
-    //    collision->GetBodyA().SetAdittionalData((collision->GetBodyA().GetAdittionalData() == "key" || collision->GetBodyA().GetAdittionalData() == "keyCollision") ? "keyCollision" : "Collision");
-    //    collision->GetBodyB().SetAdittionalData((collision->GetBodyB().GetAdittionalData() == "key" || collision->GetBodyB().GetAdittionalData() == "keyCollision") ? "keyCollision" : "Collision");
-    //}
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////step///////////////////////////////////////////////////////////
+        //for (Body& body : m_bodies)
+        //{
+        //    if (body.GetAdittionalData() == "key" || body.GetAdittionalData() == "keyCollision")
+        //        body.SetAdittionalData("key");
+        //    else if (body.GetAdittionalData() == "" || body.GetAdittionalData() == "Collision") {
+        //        body.SetAdittionalData("");
+        //    }
+        //    else {
+        //        int r = 0;
+        //    }
+        //}
+        //
+        //for (std::shared_ptr<CollisionPair>& collision : collisions)
+        //{
+        //    collision->GetBodyA().SetAdittionalData((collision->GetBodyA().GetAdittionalData() == "key" || collision->GetBodyA().GetAdittionalData() == "keyCollision") ? "keyCollision" : "Collision");
+        //    collision->GetBodyB().SetAdittionalData((collision->GetBodyB().GetAdittionalData() == "key" || collision->GetBodyB().GetAdittionalData() == "keyCollision") ? "keyCollision" : "Collision");
+        //}
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        //очищуємо список колізій
+        collisions.clear();
 
-
-    //очищуємо список колізій
-    collisions.clear();
-
-    for (Body& body : m_bodies)
-    {
-        body.ClearForces();
-        body.SetTorque(0.f);
+        for (Body& body : m_bodies)
+        {
+            body.ClearForces();
+            body.SetTorque(0.f);
+        }
     }
 }
 
@@ -185,7 +188,7 @@ void World::FixCollision(float time, size_t iterNum)
 
     //вирішуємо колізію шляхом надання імпульсу
     //повторюємо дію iterNum кількість разів
-    for (size_t j = 0; j < iterNum; ++j)
+    for (size_t j = 0; j < 1; ++j)
     {
         for (std::shared_ptr<CollisionPair>& collision : collisions)
         {
