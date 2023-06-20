@@ -155,7 +155,7 @@ void Body::SetForces(std::vector<Vector>& forces)
 
 void Body::SetAdittionalData(const std::string& data)
 {
-	m_adittionalData = std::move(data);
+	m_adittionalData = data;
 }
 
 

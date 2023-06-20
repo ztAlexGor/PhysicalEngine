@@ -29,10 +29,10 @@ CollisionManifold Collision::CheckCollision(const Body& bodyA, const Body& bodyB
 
 bool Collision::BroadPhase(const Body& bodyA, const Body& bodyB)
 {
-    AABB aabb_A = bodyA.GetShape()->GetAABB() + bodyA.GetPosition();
-    AABB aabb_B = bodyB.GetShape()->GetAABB() + bodyB.GetPosition();
-
-    return AABB::IsIntersect(aabb_A, aabb_B);
+    const AABB& aabb_A = bodyA.GetShape()->GetAABB();
+    const AABB& aabb_B = bodyB.GetShape()->GetAABB();
+    return AABB::IsIntersect(aabb_A + bodyA.GetPosition(),
+                             aabb_B + bodyB.GetPosition());
 }
 
 

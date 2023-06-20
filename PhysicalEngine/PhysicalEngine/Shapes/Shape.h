@@ -30,7 +30,9 @@ protected:
 public:
 	Shape(EType type);
 
-	virtual AABB GetAABB() const;
+	AABB GetAABB() const;
+
+	const AABB& GetAABB();
 
 	EType GetType() const;
 

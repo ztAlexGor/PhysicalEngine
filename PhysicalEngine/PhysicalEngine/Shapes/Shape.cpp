@@ -7,6 +7,11 @@ AABB Shape::GetAABB() const
 	return AABB(aabb);
 }
 
+const AABB& Shape::GetAABB()
+{
+	return aabb;
+}
+
 Shape::EType Shape::GetType() const
 {
 	return type;

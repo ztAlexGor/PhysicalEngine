@@ -16,7 +16,7 @@ class World
 
 	static const int minIterNum = 1;
 	static const int maxIterNum = 64;
-
+	static const int threadCount = 2;
 public:
 	World();
 
@@ -53,6 +53,10 @@ public:
 private:
 	void FindCollisions();
 
-	void FixCollision(float time, size_t iterNum);
+	void ParallelFindCollisions();
+
+	std::vector<std::pair<Body&, Body&>>* GetAllCollisionPairs();
+
+	void FixCollisions(float time, size_t iterNum);
 };
 

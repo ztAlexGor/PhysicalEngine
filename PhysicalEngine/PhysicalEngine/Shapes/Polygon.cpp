@@ -120,13 +120,13 @@ bool Polygon::IsPointInShape(const Vector point) const
 
 Vector Polygon::GetSupportPoint(const Vector& normal) const
 {
-    double bestProjection = -INFINITY;
+    float bestProjection = -INFINITY;
     Vector bestVertex;
 
     //для кожної вершини многокутника обислюємо її відстань у заданому напрямку
     for (const Vector& vertex : m_vertices)
     {
-        double projection = Vector::DotProduct(vertex, normal);
+        float projection = Vector::DotProduct(vertex, normal);
 
         //запам'ятовуємо найвіддаленішу вершину
         if (projection > bestProjection)
